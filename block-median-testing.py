@@ -116,7 +116,7 @@ def main():
     # Handle arguments
     parser = argparse.ArgumentParser(description='Combine multiple bathymmetry sources into a single grid')
     parser.add_argument('filenames', nargs='+', help='sources to combine with the base grid')
-    parser.add_argument('--base', help='base grid')
+    parser.add_argument('--base', required=True, help='base grid')
     args = parser.parse_args()
 
     filenames = args.filenames
