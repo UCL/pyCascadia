@@ -1,5 +1,9 @@
-# This script should not be used in any serious way (in its current form at least)!
-# It's just a way for us to learn how to use pyGMT and how to read/write the sample data.
+#!/usr/bin/env python3
+
+"""
+This script should not be used in any serious way (in its current form at least)!
+It's just a way for us to learn how to use pyGMT and how to read/write the sample data.
+"""
 
 from pygmt import blockmedian
 import pandas as pd
