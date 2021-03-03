@@ -10,6 +10,8 @@ import pandas as pd
 import xarray as xr
 import matplotlib.pyplot as plt
 import argparse
+import rasterio
+from rasterio.plot import show
 
 def load_source(filepath):
     xr_data = xr.open_dataarray(filepath)
@@ -22,6 +24,14 @@ def load_source(filepath):
     xyz_data = xyz_data[['x', 'y', 'z']]  # `blockmedian()` requires columns in the right order!!!
     return xyz_data
 
+def load_geotiff(filepath):
+    print(f"Opening {filepath}")
+    dataset = rasterio.open(filepath)
+    print(f"Number of bands: {dataset.count}")
+    print(f"Resolution: {dataset.width}, {dataset.height}")
+    print(f"CRS: {dataset.crs}")
+    return dataset
+
 def main():
     # Handle arguments
     parser = argparse.ArgumentParser(description='Combine multiple bathymmetry sources into a single grid')
@@ -32,17 +42,20 @@ def main():
     filenames = args.filenames
     filepath = filenames[0]
 
-    xyz_data = load_source(filepath)
+    dataset = load_geotiff(filepath)
+    show(dataset)
 
-    region = [-127, -122, 47, 49]  # area of interest
-    bmd = blockmedian(xyz_data, spacing=0.05, region=region)  # TODO what unit is the spacing???
+    # xyz_data = load_source(filepath)
 
-    fig = plt.figure()
-    ax = fig.add_subplot(111, projection='3d')
-    # ax.scatter(xs=xyz_data['x'], ys=xyz_data['y'], zs=xyz_data['z'], s=0.1)
-    ax.scatter(xs=bmd['x'], ys=bmd['y'], zs=bmd['z'])
+    # region = [-127, -122, 47, 49]  # area of interest
+    # bmd = blockmedian(xyz_data, spacing=0.05, region=region)  # TODO what unit is the spacing???
 
-    plt.show()
+    # fig = plt.figure()
+    # ax = fig.add_subplot(111, projection='3d')
+    # # ax.scatter(xs=xyz_data['x'], ys=xyz_data['y'], zs=xyz_data['z'], s=0.1)
+    # ax.scatter(xs=bmd['x'], ys=bmd['y'], zs=bmd['z'])
+
+    # plt.show()
 
 if __name__ == "__main__":
     main()
