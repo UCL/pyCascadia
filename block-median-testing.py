@@ -5,7 +5,7 @@ This script should not be used in any serious way (in its current form at least)
 It's just a way for us to learn how to use pyGMT and how to read/write the sample data.
 """
 
-from pygmt import blockmedian
+from pygmt import blockmedian, surface
 import pandas as pd
 import xarray as xr
 import numpy as np
@@ -15,6 +15,7 @@ import rasterio
 from rasterio.plot import show
 
 def load_source(filepath):
+    print(f"Loading {filepath}")
     ext = filepath.split('.')[-1]
     if ext == 'nc':
         return load_netcfd(filepath)
@@ -37,7 +38,6 @@ def load_netcfd(filepath):
 def load_geotiff(filepath):
     """Loads geotiff file as GMT-consumable pandas dataframe"""
 
-    print(f"Opening {filepath}")
     dataset = rasterio.open(filepath)
     print(f"Number of bands: {dataset.count}")
     print(f"Resolution: {dataset.width}, {dataset.height}")
@@ -60,7 +60,7 @@ def load_geotiff(filepath):
     dx = abs(right - left)/(x_res-1)
     dy = abs(top - bottom)/(y_res-1)
     x += dx/2
-    y -= dy/2
+    y -= dy/2 # negative due to orientation of 
 
     # This is a test
     # ix = 0
@@ -72,7 +72,7 @@ def load_geotiff(filepath):
 
     # print(x_error, y_error)
 
-    # Form points
+    # Form array of points
     x, y = np.meshgrid(x, y)
     z = dataset.read()
 
@@ -84,23 +84,55 @@ def load_geotiff(filepath):
 
     return df
 
+def form_grid(xyz_data, region=None, spacing=None):
+    """Creates grid from x,y,z points"""
+
+    if region is None:
+        raise RuntimeError("region not specified")
+    if spacing is None:
+        raise RuntimeError("spacing not specified")
+
+    print("Forming grid")
+
+    # os.system('blockmedian -R%s -I%s -V -Q %s\\%s > %s\\%s' % (BM_R,BM_I, DIRstr, DATAstr, DIRstr, BM_OUTPUT))
+
+    print("Calculating block median")
+
+    bmd = blockmedian(xyz_data, spacing=spacing, region=region)
+
+    print("Gridding")
+
+    # os.system('surface %s\\%s -R%s -I%s -N%s -T%s -G%s\   \%s -Lu%s -V'%(DIRstr, BM_OUTPUT, BM_R,S_I, N_I, S_T, DIRstr, S_grd_out, LU))
+    grid = surface(x=bmd['x'], y=bmd['y'], z=bmd['z'], region=region, spacing=spacing)
+
+    # os.system('grdcut %s\\%s   -R%s -G%s\   \%s'%(DIRstr, S_grd_out, CUT_R, DIRstr, CUT_grd_out))
+    # os.system('grdfilter %s\\%s -G%s\   \%s -R%s -D0 -Fc%s'%(DIRstr, CUT_grd_out, DIRstr, FILT_grd_out,CUT_R, FILT))
+
+    # os.system('grdsample %s\\%s -G%s\   \%s -R%s -I%s -V'%(DIRstr, FILT_grd_out, DIRstr, RESAMP_grd_out,CUT_R, R_I))
+
+    return grid
+
 def main():
     # Handle arguments
     parser = argparse.ArgumentParser(description='Combine multiple bathymmetry sources into a single grid')
-    parser.add_argument('filenames', nargs='+',
-                        help='sources to combine')
+    parser.add_argument('filenames', nargs='+', help='sources to combine with the base grid')
+    parser.add_argument('--base', help='base grid')
     args = parser.parse_args()
 
     filenames = args.filenames
     filepath = filenames[0]
 
     xyz_data = load_source(filepath)
-    print(xyz_data)
 
-    # xyz_data = load_source(filepath)
-
-    # region = [-127, -122, 47, 49]  # area of interest
     # bmd = blockmedian(xyz_data, spacing=0.05, region=region)  # TODO what unit is the spacing???
+
+    region = [-123.8, -122.8, 48.3, 48.9]
+    # region = [-127, -122, 47, 49]  # area of interest
+    spacing = 0.001
+    grid = form_grid(xyz_data, region=region, spacing=spacing)
+
+    grid.plot()
+    plt.show()
 
     # fig = plt.figure()
     # ax = fig.add_subplot(111, projection='3d')
