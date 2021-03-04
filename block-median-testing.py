@@ -5,7 +5,7 @@ This script should not be used in any serious way (in its current form at least)
 It's just a way for us to learn how to use pyGMT and how to read/write the sample data.
 """
 
-from pygmt import blockmedian, surface
+from pygmt import blockmedian, surface, grdtrack, grdcut
 import pandas as pd
 import xarray as xr
 import numpy as np
@@ -26,6 +26,7 @@ def load_source(filepath):
 
 def load_netcfd(filepath):
     xr_data = xr.open_dataarray(filepath)
+    print(f"Resolution: {xr_data.values.shape}")
     # we might lose some metadata with the `to_dataframe()` conversion here, but that's OK as we'll just want a bunch of xyz
     # independent of the original data file here in the future. Good to keep in mind, though, and ensure that the metadata
     # is correct and in the right unit etc.
@@ -92,23 +93,11 @@ def form_grid(xyz_data, region=None, spacing=None):
     if spacing is None:
         raise RuntimeError("spacing not specified")
 
-    print("Forming grid")
-
-    # os.system('blockmedian -R%s -I%s -V -Q %s\\%s > %s\\%s' % (BM_R,BM_I, DIRstr, DATAstr, DIRstr, BM_OUTPUT))
-
     print("Calculating block median")
-
     bmd = blockmedian(xyz_data, spacing=spacing, region=region)
 
     print("Gridding")
-
-    # os.system('surface %s\\%s -R%s -I%s -N%s -T%s -G%s\   \%s -Lu%s -V'%(DIRstr, BM_OUTPUT, BM_R,S_I, N_I, S_T, DIRstr, S_grd_out, LU))
     grid = surface(x=bmd['x'], y=bmd['y'], z=bmd['z'], region=region, spacing=spacing)
-
-    # os.system('grdcut %s\\%s   -R%s -G%s\   \%s'%(DIRstr, S_grd_out, CUT_R, DIRstr, CUT_grd_out))
-    # os.system('grdfilter %s\\%s -G%s\   \%s -R%s -D0 -Fc%s'%(DIRstr, CUT_grd_out, DIRstr, FILT_grd_out,CUT_R, FILT))
-
-    # os.system('grdsample %s\\%s -G%s\   \%s -R%s -I%s -V'%(DIRstr, FILT_grd_out, DIRstr, RESAMP_grd_out,CUT_R, R_I))
 
     return grid
 
@@ -120,18 +109,47 @@ def main():
     args = parser.parse_args()
 
     filenames = args.filenames
+    base_filepath = args.base
     filepath = filenames[0]
 
+    # Create base grid
+    base_region = [-125, -122, 48, 49]  # area of interest
+    spacing = 0.005
+
+    base_xyz_data = load_source(base_filepath)
+    print("Creating base grid")
+    base_grid = form_grid(base_xyz_data, region=base_region, spacing=spacing)
+
+    print("Loading update grid")
     xyz_data = load_source(filepath)
+    region = [-123.8, -122.8, 48.3, 48.9] # TODO replace with automatic calc
+    bmd = blockmedian(xyz_data, spacing=spacing, region=region)
 
-    # bmd = blockmedian(xyz_data, spacing=0.05, region=region)  # TODO what unit is the spacing???
+    update_grid = form_grid(bmd, region=region, spacing=spacing)
+    large_update_grid = grdcut(update_grid, region=base_region, extend=0.0)
 
-    region = [-123.8, -122.8, 48.3, 48.9]
-    # region = [-127, -122, 47, 49]  # area of interest
-    spacing = 0.001
-    grid = form_grid(xyz_data, region=region, spacing=spacing)
+    fig, axes = plt.subplots(2)
+    base_grid.plot(ax=axes[0])
+    axes[0].set_
+    large_update_grid.plot(ax=axes[1])
+    plt.show()
 
-    grid.plot()
+    print("Form difference grid")
+    base_pts = grdtrack(bmd, base_grid, 'base_z')
+
+    diff = pd.DataFrame()
+    diff['x'] = base_pts['x']
+    diff['y'] = base_pts['y']
+    diff['z'] = base_pts['z'] - base_pts['base_z']
+
+    diff_grid = form_grid(diff, region=region, spacing=spacing)
+    large_diff_grid = grdcut(diff_grid, region=base_region, extend=0.0)
+
+    base_grid.values += large_diff_grid.values
+
+    fig, axes = plt.subplots(2)
+    base_grid.plot(ax=axes[0])
+    large_diff_grid.plot(ax=axes[1])
     plt.show()
 
     # fig = plt.figure()
