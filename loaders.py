@@ -2,24 +2,32 @@ import xarray as xr
 import pandas as pd
 import numpy as np
 import rasterio
+from rasterio.plot import show
+import matplotlib.pyplot as plt
 
 """
 Helper functions for loading different types of data sources as xyz dataframes
 """
 
-def load_source(filepath):
+def load_source(filepath, plot=False):
     print(f"Loading {filepath}")
     ext = filepath.split('.')[-1]
     if ext == 'nc':
-        return load_netcfd(filepath)
+        return load_netcfd(filepath, plot)
     elif ext == 'tif':
-        return load_geotiff(filepath)
+        return load_geotiff(filepath, plot)
     else:
         raise RuntimeError(f"Error: filetype {ext} not recognised.")
 
-def load_netcfd(filepath):
+def load_netcfd(filepath, plot=False):
     xr_data = xr.open_dataarray(filepath)
+
     print(f"Resolution: {xr_data.values.shape}")
+
+    if plot:
+        xr_data.plot()
+        plt.show()
+
     # we might lose some metadata with the `to_dataframe()` conversion here, but that's OK as we'll just want a bunch of xyz
     # independent of the original data file here in the future. Good to keep in mind, though, and ensure that the metadata
     # is correct and in the right unit etc.
@@ -29,13 +37,16 @@ def load_netcfd(filepath):
     xyz_data = xyz_data[['x', 'y', 'z']]  # `blockmedian()` requires columns in the right order!!!
     return xyz_data
 
-def load_geotiff(filepath):
+def load_geotiff(filepath, plot=False):
     """Loads geotiff file as GMT-consumable pandas dataframe"""
 
     dataset = rasterio.open(filepath)
     print(f"Number of bands: {dataset.count}")
     print(f"Resolution: {dataset.width}, {dataset.height}")
     print(f"CRS: {dataset.crs}")
+
+    if plot:
+        show(dataset)
 
     bounds = dataset.bounds
     left = bounds.left
