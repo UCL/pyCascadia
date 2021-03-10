@@ -65,17 +65,7 @@ def load_geotiff(filepath, plot=False):
     dx = abs(right - left)/(x_res-1)
     dy = abs(top - bottom)/(y_res-1)
     x += dx/2
-    y -= dy/2 # negative due to orientation of 
-
-    # This is a test
-    # ix = 0
-    # iy = 0
-
-    # pt = dataset.xy(ix, iy)
-    # x_error = abs(x[ix, iy] - pt[0])
-    # y_error = abs(y[ix, iy] - pt[1])
-
-    # print(x_error, y_error)
+    y -= dy/2 # negative due to orientation
 
     # Form array of points
     x, y = np.meshgrid(x, y)
