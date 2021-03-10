@@ -2,7 +2,7 @@ name: Pytest
 
 on:
   push:
-    branches: [master]
+    branches: [master, sandbox]
   pull_request:
 
 jobs:
