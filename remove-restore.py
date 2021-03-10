@@ -6,9 +6,7 @@ It's just a way for us to learn how to use pyGMT and how to read/write the sampl
 """
 
 from pygmt import blockmedian, surface, grdtrack, grdcut
-import pygmt
 import os
-import math
 import pandas as pd
 import matplotlib.pyplot as plt
 import argparse
@@ -48,6 +46,7 @@ def main():
     nodata_val = 999999.0 # TODO can we safely add this to CLI arguments?
 
     # Create base grid
+    # base_region = [-126, -122, 47, 49.5]  # area of interest
     base_region = [-125, -122, 48, 49]  # area of interest
     spacing = 0.005
 
@@ -57,7 +56,8 @@ def main():
 
     print("Loading update grid")
     xyz_data = load_source(filepath, plot=False)
-    region = [-123.8, -122.8, 48.3, 48.9] # TODO replace with automatic calc
+    # region = [-125, -122, 48, 49] # TODO replace with automatic calc
+    region = base_region
     xyz_data.where(xyz_data['z'] != nodata_val, inplace=True)
 
     print("Blockmedian update grid")
@@ -82,9 +82,11 @@ def main():
     print("Update base grid")
     base_grid.values += large_diff_grid.values
 
-    fig, axes = plt.subplots(2)
-    base_grid.plot(ax=axes[0])
-    large_diff_grid.plot(ax=axes[1])
+    fig, axes = plt.subplots(2,2)
+    base_grid.plot(ax=axes[0,0])
+    large_diff_grid.plot(ax=axes[0,1])
+    base_grid.differentiate('x').plot(ax=axes[1,0])
+    base_grid.differentiate('y').plot(ax=axes[1,1])
     plt.show()
 
 if __name__ == "__main__":
