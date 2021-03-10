@@ -7,18 +7,26 @@ on:
 
 jobs:
   test:
-    name: pyCascadia ${{ matrix.os }}
+    name: pyCascadia on ${{ matrix.os }} with Python ${{ matrix.python }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
         os:
           - ubuntu-20.04
+        python:
+          - '3.9'
     steps:
       - uses: actions/checkout@v2
 
+      - name: Setup python
+        uses: actions/setup-python@v1
+        with:
+          python-version: ${{ matrix.python }}
+          architecture: x64
+
       - name: Install pipenv environment
-        run: pipenv install
+        run: pip install pipenv && pipenv install
 
       - name: Test
         run: pipenv run pytest
