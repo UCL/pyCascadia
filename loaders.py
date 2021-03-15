@@ -14,7 +14,7 @@ def load_source(filepath, plot=False):
     ext = filepath.split('.')[-1]
     if ext == 'nc':
         return load_netcfd(filepath, plot)
-    elif ext == 'tif':
+    elif ext == 'tif' or ext == 'tiff':
         return load_geotiff(filepath, plot)
     else:
         raise RuntimeError(f"Error: filetype {ext} not recognised.")
