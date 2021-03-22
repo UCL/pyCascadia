@@ -13,13 +13,13 @@ def load_source(filepath, plot=False):
     print(f"Loading {filepath}")
     ext = filepath.split('.')[-1]
     if ext == 'nc':
-        return load_netcfd(filepath, plot)
+        return load_netcdf(filepath, plot)
     elif ext == 'tif' or ext == 'tiff':
         return load_geotiff(filepath, plot)
     else:
         raise RuntimeError(f"Error: filetype {ext} not recognised.")
 
-def load_netcfd(filepath, plot=False, convert_to_xyz=False):
+def load_netcdf(filepath, plot=False, convert_to_xyz=False):
     xr_data = xr.open_dataarray(filepath)
 
     print(f"Resolution: {xr_data.values.shape}")
