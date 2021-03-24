@@ -50,24 +50,16 @@ def main():
     nodata_val = 999999.0 # TODO can we safely add this to CLI arguments?
 
     # Create base grid
-    # base_region = [-126, -122, 47, 49.5]  # area of interest
-    base_region = [-125, -122, 48, 49]  # area of interest
-    # spacing = 18/3600 # in degrees
-
-    # base_xyz_data = load_source(base_filepath, plot=False)
-    # print("Creating base grid")
-    # base_grid = form_grid(base_xyz_data, region=base_region, spacing=spacing)
-
     base_grid = load_source(base_filepath, plot=False)
-    base_grid = grdcut(base_grid, region=base_region)
-    print(base_grid.lat)
+
+    base_region = [-125, -122, 48, 49]  # area of interest
+    base_grid = grdcut(base_grid, region=base_region) # crop grid
 
     spacing = float(base_grid.lat[1] - base_grid.lat[0])
 
     print("Loading update grid")
     xyz_data = load_source(filepath, plot=False)
-    # region = [-125, -122, 48, 49] # TODO replace with automatic calc
-    region = extract_region(base_grid)
+    region = extract_region(base_grid) # TODO replace this with smaller region enclosing only update grid
     xyz_data.where(xyz_data['z'] != nodata_val, inplace=True)
 
     print("Blockmedian update grid")
@@ -88,7 +80,10 @@ def main():
 
     os.system(f'gmt nearneighbor {diff_xyz_fname} -G{diff_grid_fname} -R{region_to_str(region)} -I{spacing} -S{spacing} -N4 -E0 -V')
     large_diff_grid = grdcut(diff_grid_fname, region=region, extend=0.0)
-    print(large_diff_grid.y)
+
+    # Cleanup files
+    os.remove(diff_grid_fname)
+    os.remove(diff_xyz_fname)
 
     print("Update base grid")
     base_grid.values += large_diff_grid.values
