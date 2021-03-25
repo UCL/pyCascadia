@@ -5,7 +5,7 @@ This script should not be used in any serious way (in its current form at least)
 It's just a way for us to learn how to use pyGMT and how to read/write the sample data.
 """
 
-from pygmt import blockmedian, surface, grdtrack, grdcut
+from pygmt import blockmedian, surface, grdtrack, grdcut, grdfilter
 import os
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -52,21 +52,20 @@ def main():
     # Create base grid
     base_grid = load_source(base_filepath, plot=False)
 
-    base_region = [-125, -122, 48, 49]  # area of interest
-    base_grid = grdcut(base_grid, region=base_region) # crop grid
+    region_of_interest = [-125, -122, 48, 49]
+    base_grid = grdcut(base_grid, region=region_of_interest) # crop grid
 
     spacing = float(base_grid.lat[1] - base_grid.lat[0])
 
     print("Loading update grid")
-    xyz_data = load_source(filepath, plot=False)
-    region = extract_region(base_grid) # TODO replace this with smaller region enclosing only update grid
+    xyz_data, region = load_source(filepath, plot=False)
     xyz_data.where(xyz_data['z'] != nodata_val, inplace=True)
 
     print("Blockmedian update grid")
     bmd = blockmedian(xyz_data, spacing=spacing, region=region)
 
     print("Find z in base grid")
-    base_pts = grdtrack(bmd, base_grid, 'base_z', interpolation='n')
+    base_pts = grdtrack(bmd, base_grid, 'base_z')
 
     print ("Create difference grid")
     diff = pd.DataFrame()
@@ -78,15 +77,16 @@ def main():
     diff_grid_fname = "diff.grd"
     diff.to_csv(diff_xyz_fname, sep=' ', header=False, index=False)
 
-    os.system(f'gmt nearneighbor {diff_xyz_fname} -G{diff_grid_fname} -R{region_to_str(region)} -I{spacing} -S{spacing} -N4 -E0 -V')
-    large_diff_grid = grdcut(diff_grid_fname, region=region, extend=0.0)
+    base_region = extract_region(base_grid) # must be calcd from base grid to properly align grids
+    os.system(f'gmt nearneighbor {diff_xyz_fname} -G{diff_grid_fname} -R{region_to_str(base_region)} -I{spacing} -S{spacing} -N4 -E0 -V')
+    filtered_update = grdfilter(diff_grid_fname, filter='b3', distance='p')
 
     # Cleanup files
     os.remove(diff_grid_fname)
     os.remove(diff_xyz_fname)
 
     print("Update base grid")
-    base_grid.values += large_diff_grid.values
+    base_grid.values += filtered_update.values
 
     fig, axes = plt.subplots(2,2)
     base_grid.plot(ax=axes[0,0])

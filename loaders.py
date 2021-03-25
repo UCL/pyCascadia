@@ -80,4 +80,6 @@ def load_geotiff(filepath, plot=False):
     df['y'] = y.flatten()
     df['z'] = z.flatten()
 
-    return df
+    region = [bounds.left, bounds.right, bounds.bottom, bounds.top]
+
+    return df, region
