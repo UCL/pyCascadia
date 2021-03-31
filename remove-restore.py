@@ -90,7 +90,7 @@ def main():
 
     fig, axes = plt.subplots(2,2)
     base_grid.plot(ax=axes[0,0])
-    large_diff_grid.plot(ax=axes[0,1])
+    filtered_update.plot(ax=axes[0,1])
     base_grid.differentiate('lon').plot(ax=axes[1,0])
     base_grid.differentiate('lat').plot(ax=axes[1,1])
     plt.show()
