@@ -60,15 +60,12 @@ def load_geotiff(filepath, plot=False):
     x_res = dataset.width
     y_res = dataset.height
 
-    # Get positions of upper-right corner of pixels
-    x = np.linspace(left, right, x_res)
-    y = np.linspace(top, bottom, y_res)
+    dx = abs(right - left)/x_res
+    dy = abs(top - bottom)/y_res
 
-    # Recentre pixel locations
-    dx = abs(right - left)/(x_res-1)
-    dy = abs(top - bottom)/(y_res-1)
-    x += dx/2
-    y -= dy/2 # negative due to orientation
+    # Get positions of upper-right corner of pixels
+    x = np.linspace(left+dx/2, right-dx/2, x_res)
+    y = np.linspace(top-dy/2, bottom+dy/2, y_res)
 
     # Form array of points
     x, y = np.meshgrid(x, y)
