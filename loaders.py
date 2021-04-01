@@ -43,42 +43,43 @@ def load_netcdf(filepath, plot=False, convert_to_xyz=False):
 def load_geotiff(filepath, plot=False):
     """Loads geotiff file as GMT-consumable pandas dataframe"""
 
-    with rasterio.open(filepath) as dataset:
-        print(f"Number of bands: {dataset.count}")
-        print(f"Resolution: {dataset.width}, {dataset.height}")
-        print(f"CRS: {dataset.crs}")
+    dataset = rasterio.open(filepath)
+    print(f"Number of bands: {dataset.count}")
+    print(f"Resolution: {dataset.width}, {dataset.height}")
+    print(f"CRS: {dataset.crs}")
 
-        if plot:
-            show(dataset)
+    if plot:
+        show(dataset)
 
-        # bounds go from top-left corner of top-left pixel area 
-        # to bottom-right corner of bottom-right pixel area
-        bounds = dataset.bounds
-        left = bounds.left
-        right = bounds.right
-        top = bounds.top
-        bottom = bounds.bottom
+    # bounds go from top-left corner of top-left pixel area 
+    # to bottom-right corner of bottom-right pixel area
+    bounds = dataset.bounds
+    left = bounds.left
+    right = bounds.right
+    top = bounds.top
+    bottom = bounds.bottom
 
-        x_res = dataset.width
-        y_res = dataset.height
+    x_res = dataset.width
+    y_res = dataset.height
 
-        dx = abs(right - left)/x_res
-        dy = abs(top - bottom)/y_res
+    dx = abs(right - left)/x_res
+    dy = abs(top - bottom)/y_res
 
-        # Get centre position of pixels
-        x = np.linspace(left+dx/2, right-dx/2, x_res)
-        y = np.linspace(top-dy/2, bottom+dy/2, y_res)
+    # Get centre position of pixels
+    x = np.linspace(left+dx/2, right-dx/2, x_res)
+    y = np.linspace(top-dy/2, bottom+dy/2, y_res)
 
-        # Form array of points
-        x, y = np.meshgrid(x, y)
-        z = dataset.read()
+    # Form array of points
+    x, y = np.meshgrid(x, y)
+    z = dataset.read()
 
-        # Convert to dataframe
-        df = pd.DataFrame()
-        df['x'] = x.flatten()
-        df['y'] = y.flatten()
-        df['z'] = z.flatten()
+    # Convert to dataframe
+    df = pd.DataFrame()
+    df['x'] = x.flatten()
+    df['y'] = y.flatten()
+    df['z'] = z.flatten()
 
-        region = [bounds.left, bounds.right, bounds.bottom, bounds.top]
-
-        return df, region
+    region = [bounds.left, bounds.right, bounds.bottom, bounds.top]
+    dataset.close()
+    
+    return df, region
