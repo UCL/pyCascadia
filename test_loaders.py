@@ -14,9 +14,10 @@ def test_loader_equivalence():
     sorted_geotiff = df_geotiff.sort_values(["x", "y"], ignore_index=True)
     sorted_netcdf = df_netcdf.sort_values(["x", "y"], ignore_index=True)
 
+    diff_x = abs(sorted_geotiff.x - sorted_netcdf.x)
+    diff_y = abs(sorted_geotiff.y - sorted_netcdf.y)
     diff_z = abs(sorted_geotiff.z - sorted_netcdf.z)
+    
+    assert diff_x.max() < 1.e-12
     assert diff_z.max() < 1.e-12
-
-    # TODO these don't pass! Why? Is the meshgridding in load_geotiff correct?
-    # assert sorted_geotiff.x.all == sorted_netcdf.x.all
-    # assert sorted_geotiff.y.all == sorted_netcdf.y.all
+    assert diff_y.max() < 1.e-12
