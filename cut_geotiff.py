@@ -1,5 +1,5 @@
 """
-This is a very specific script intended to crop a geotiff file in to a small chunk for use in testing. It does keep the proper coordinate system and transform.
+This is a very specific script intended to crop a geotiff file in to a small chunk for use in testing. It maintains the proper coordinate system and transform.
 """
 
 import rasterio
