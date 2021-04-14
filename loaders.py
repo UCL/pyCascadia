@@ -20,7 +20,7 @@ def load_source(filepath, plot=False):
         raise RuntimeError(f"Error: filetype {ext} not recognised.")
 
 def load_netcfd(filepath, plot=False, convert_to_xyz=False):
-    xr_data = xr.open_dataarray(filepath)
+    xr_data = xr.open_dataarray(filepath).astype('float32')
 
     print(f"Resolution: {xr_data.values.shape}")
 

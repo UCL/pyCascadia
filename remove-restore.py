@@ -33,7 +33,7 @@ def region_to_str(region):
     return '/'.join(map(str, region))
 
 def extract_region(grid):
-    return [float(grid.lon[0]), float(grid.lon[-1]), float(grid.lat[0]), float(grid.lat[-1])]
+    return [float(grid.x[0]), float(grid.x[-1]), float(grid.y[0]), float(grid.y[-1])]
 
 def main():
     # Handle arguments
@@ -55,7 +55,7 @@ def main():
     region_of_interest = [-125, -122, 48, 49]
     base_grid = grdcut(base_grid, region=region_of_interest) # crop grid
 
-    spacing = float(base_grid.lat[1] - base_grid.lat[0])
+    spacing = float(base_grid.y[1] - base_grid.y[0])
 
     print("Loading update grid")
     xyz_data, region = load_source(filepath, plot=False)
@@ -91,8 +91,8 @@ def main():
     fig, axes = plt.subplots(2,2)
     base_grid.plot(ax=axes[0,0])
     filtered_update.plot(ax=axes[0,1])
-    base_grid.differentiate('lon').plot(ax=axes[1,0])
-    base_grid.differentiate('lat').plot(ax=axes[1,1])
+    base_grid.differentiate('x').plot(ax=axes[1,0])
+    base_grid.differentiate('y').plot(ax=axes[1,1])
     plt.show()
 
 if __name__ == "__main__":
