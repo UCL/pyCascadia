@@ -19,7 +19,7 @@ def load_source(filepath, plot=False):
     else:
         raise RuntimeError(f"Error: filetype {ext} not recognised.")
 
-def load_netcfd(filepath, plot=False):
+def load_netcfd(filepath, plot=False, convert_to_xyz=False):
     xr_data = xr.open_dataarray(filepath)
 
     print(f"Resolution: {xr_data.values.shape}")
@@ -28,14 +28,17 @@ def load_netcfd(filepath, plot=False):
         xr_data.plot()
         plt.show()
 
-    # we might lose some metadata with the `to_dataframe()` conversion here, but that's OK as we'll just want a bunch of xyz
-    # independent of the original data file here in the future. Good to keep in mind, though, and ensure that the metadata
-    # is correct and in the right unit etc.
-    xyz_data = xr_data.to_dataframe()
-    xyz_data = xyz_data.reset_index()
-    xyz_data.rename(columns={'lon': 'x', 'lat': 'y', 'elevation': 'z'}, inplace=True)
-    xyz_data = xyz_data[['x', 'y', 'z']]  # `blockmedian()` requires columns in the right order!!!
-    return xyz_data
+    if convert_to_xyz:
+        # we might lose some metadata with the `to_dataframe()` conversion here, but that's OK as we'll just want a bunch of xyz
+        # independent of the original data file here in the future. Good to keep in mind, though, and ensure that the metadata
+        # is correct and in the right unit etc.
+        xyz_data = xr_data.to_dataframe()
+        xyz_data = xyz_data.reset_index()
+        xyz_data.rename(columns={'lon': 'x', 'lat': 'y', 'elevation': 'z'}, inplace=True)
+        xyz_data = xyz_data[['x', 'y', 'z']]  # `blockmedian()` requires columns in the right order!!!
+        return xyz_data
+    else:
+        return xr_data
 
 def load_geotiff(filepath, plot=False):
     """Loads geotiff file as GMT-consumable pandas dataframe"""
@@ -77,4 +80,6 @@ def load_geotiff(filepath, plot=False):
     df['y'] = y.flatten()
     df['z'] = z.flatten()
 
-    return df
+    region = [bounds.left, bounds.right, bounds.bottom, bounds.top]
+
+    return df, region
