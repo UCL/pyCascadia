@@ -1,8 +1,6 @@
 import xarray as xr
 import pandas as pd
 import numpy as np
-import rasterio
-from rasterio.plot import show
 import matplotlib.pyplot as plt
 
 """
@@ -40,46 +38,33 @@ def load_netcfd(filepath, plot=False, convert_to_xyz=False):
     else:
         return xr_data
 
-def load_geotiff(filepath, plot=False):
-    """Loads geotiff file as GMT-consumable pandas dataframe"""
+def load_geotiff(filepath, plot=False, filter_nodata=True):
+    xr_data = xr.open_rasterio(filepath, parse_coordinates=True)
+    xr_data = xr_data.squeeze('band') # Remove band if present
+    xr_data = xr_data.rename('z')
 
-    dataset = rasterio.open(filepath)
-    print(f"Number of bands: {dataset.count}")
-    print(f"Resolution: {dataset.width}, {dataset.height}")
-    print(f"CRS: {dataset.crs}")
+    print(f"Number of bands: {xr_data.coords['band'].values}")
+    print(f"Resolution: ({xr_data.sizes['x']}, {xr_data.sizes['y']})")
+    print(f"CRS: {xr_data.crs}")
 
     if plot:
-        show(dataset)
+        xr_data.plot()
+        plt.show()
 
-    bounds = dataset.bounds
-    left = bounds.left
-    right = bounds.right
-    top = bounds.top
-    bottom = bounds.bottom
+    xyz_data = xr_data.to_dataframe()
+    xyz_data = xyz_data.reset_index()
+    xyz_data = xyz_data[['x', 'y', 'z']]
 
-    x_res = dataset.width
-    y_res = dataset.height
+    left = xr_data.coords['x'].values[0]
+    right = xr_data.coords['x'].values[-1]
+    top = xr_data.coords['y'].values[0]
+    bottom = xr_data.coords['y'].values[-1]
 
-    # Get positions of upper-right corner of pixels
-    x = np.linspace(left, right, x_res)
-    y = np.linspace(top, bottom, y_res)
+    region = [left, right, bottom, top]
 
-    # Recentre pixel locations
-    dx = abs(right - left)/(x_res-1)
-    dy = abs(top - bottom)/(y_res-1)
-    x += dx/2
-    y -= dy/2 # negative due to orientation
+    if filter_nodata:
+        # filter out nodata values
+        for nodata_val in xr_data.nodatavals:
+            xyz_data.where(xyz_data['z'] != nodata_val, inplace=True)
 
-    # Form array of points
-    x, y = np.meshgrid(x, y)
-    z = dataset.read()
-
-    # Convert to dataframe
-    df = pd.DataFrame()
-    df['x'] = x.flatten()
-    df['y'] = y.flatten()
-    df['z'] = z.flatten()
-
-    region = [bounds.left, bounds.right, bounds.bottom, bounds.top]
-
-    return df, region
+    return xyz_data, region

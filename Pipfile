@@ -6,7 +6,6 @@ name = "pypi"
 [packages]
 pygmt = "*"
 matplotlib = "*"
-rasterio = "*"
 pytest = "*"
 
 [dev-packages]
