@@ -59,7 +59,6 @@ def main():
 
     print("Loading update grid")
     xyz_data, region = load_source(filepath, plot=False)
-    xyz_data.where(xyz_data['z'] != nodata_val, inplace=True)
 
     print("Blockmedian update grid")
     bmd = blockmedian(xyz_data, spacing=spacing, region=region)

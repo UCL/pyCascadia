@@ -82,4 +82,8 @@ def load_geotiff(filepath, plot=False):
 
     region = [bounds.left, bounds.right, bounds.bottom, bounds.top]
 
+    # filter out nodata values
+    for nodata_val in dataset.nodatavals:
+        df.where(df['z'] != nodata_val, inplace=True)
+
     return df, region
