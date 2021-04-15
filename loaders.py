@@ -8,6 +8,9 @@ Helper functions for loading different types of data sources as xyz dataframes
 """
 
 def load_source(filepath, plot=False, convert_to_xyz=False):
+    """
+    Loads an xarray dataarray from file, optionally converting it to an xyz dataframe
+    """
     print(f"Loading {filepath}")
     ext = filepath.split('.')[-1]
     if ext == 'nc':
@@ -18,6 +21,9 @@ def load_source(filepath, plot=False, convert_to_xyz=False):
         raise RuntimeError(f"Error: filetype {ext} not recognised.")
 
 def extract_region(xr_data):
+    """
+    Extracts the bounding box from an xarray dataarray
+    """
     left = xr_data.coords['x'].values[0]
     right = xr_data.coords['x'].values[-1]
     top = xr_data.coords['y'].values[0]
@@ -26,6 +32,10 @@ def extract_region(xr_data):
     return [left, right, bottom, top]
 
 def xr_to_xyz(xr_data):
+    """
+    Converts an xarray dataarray into a pandas dataframe.
+    This requires the input coordinates to be named (x,y) and the elevation to be named z
+    """
     xyz_data = xr_data.to_dataframe()
     xyz_data = xyz_data.reset_index()
     xyz_data = xyz_data[['x', 'y', 'z']]
