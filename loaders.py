@@ -40,7 +40,7 @@ def load_netcfd(filepath, plot=False, convert_to_xyz=False):
     else:
         return xr_data
 
-def load_geotiff(filepath, plot=False):
+def load_geotiff(filepath, plot=False, filter_nodata=True):
     """Loads geotiff file as GMT-consumable pandas dataframe"""
 
     dataset = rasterio.open(filepath)
@@ -82,8 +82,9 @@ def load_geotiff(filepath, plot=False):
 
     region = [bounds.left, bounds.right, bounds.bottom, bounds.top]
 
-    # filter out nodata values
-    for nodata_val in dataset.nodatavals:
-        df.where(df['z'] != nodata_val, inplace=True)
+    if filter_nodata:
+        # filter out nodata values
+        for nodata_val in dataset.nodatavals:
+            df.where(df['z'] != nodata_val, inplace=True)
 
     return df, region
