@@ -19,6 +19,8 @@ def load_source(filepath, plot=False):
 
 def load_netcfd(filepath, plot=False, convert_to_xyz=False):
     xr_data = xr.open_dataarray(filepath).astype('float32')
+    xr_data = xr_data.rename('z')
+    xr_data = xr_data.rename({'lon': 'x', 'lat': 'y'})
 
     print(f"Resolution: {xr_data.values.shape}")
 
@@ -32,7 +34,6 @@ def load_netcfd(filepath, plot=False, convert_to_xyz=False):
         # is correct and in the right unit etc.
         xyz_data = xr_data.to_dataframe()
         xyz_data = xyz_data.reset_index()
-        xyz_data.rename(columns={'lon': 'x', 'lat': 'y', 'elevation': 'z'}, inplace=True)
         xyz_data = xyz_data[['x', 'y', 'z']]  # `blockmedian()` requires columns in the right order!!!
         return xyz_data
     else:
