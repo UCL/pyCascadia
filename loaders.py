@@ -62,6 +62,7 @@ def load_netcdf(filepath, plot=False, convert_to_xyz=False):
         return xr_data, region
 
 def load_geotiff(filepath, plot=False, convert_to_xyz=False, filter_nodata=True):
+    """Loads geotiff file as GMT-consumable pandas dataframe"""
     xr_data = xr.open_rasterio(filepath, parse_coordinates=True)
     xr_data = xr_data.squeeze('band') # Remove band if present
     xr_data = xr_data.rename('z')

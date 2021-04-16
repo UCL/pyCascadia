@@ -64,7 +64,7 @@ def main():
     bmd = blockmedian(xyz_data, spacing=spacing, region=region)
 
     print("Find z in base grid")
-    base_pts = grdtrack(bmd, base_grid, 'base_z')
+    base_pts = grdtrack(bmd, base_grid, 'base_z', interpolation='n')
 
     print ("Create difference grid")
     diff = pd.DataFrame()
