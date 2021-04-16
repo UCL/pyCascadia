@@ -50,7 +50,7 @@ def main():
     nodata_val = 999999.0 # TODO can we safely add this to CLI arguments?
 
     # Create base grid
-    base_grid = load_source(base_filepath, plot=False)
+    base_grid, initial_base_region = load_source(base_filepath, plot=False)
 
     region_of_interest = [-125, -122, 48, 49]
     base_grid = grdcut(base_grid, region=region_of_interest) # crop grid
@@ -58,7 +58,7 @@ def main():
     spacing = float(base_grid.y[1] - base_grid.y[0])
 
     print("Loading update grid")
-    xyz_data, region = load_source(filepath, plot=False)
+    xyz_data, region = load_source(filepath, plot=False, convert_to_xyz=True)
 
     print("Blockmedian update grid")
     bmd = blockmedian(xyz_data, spacing=spacing, region=region)

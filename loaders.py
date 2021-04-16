@@ -1,26 +1,50 @@
 import xarray as xr
 import pandas as pd
 import numpy as np
-import rasterio
-from rasterio.plot import show
 import matplotlib.pyplot as plt
 
 """
 Helper functions for loading different types of data sources as xyz dataframes
 """
 
-def load_source(filepath, plot=False):
+def load_source(filepath, plot=False, convert_to_xyz=False):
+    """
+    Loads an xarray dataarray from file, optionally converting it to an xyz dataframe
+    """
     print(f"Loading {filepath}")
     ext = filepath.split('.')[-1]
     if ext == 'nc':
-        return load_netcfd(filepath, plot)
+        return load_netcdf(filepath, plot=plot, convert_to_xyz=convert_to_xyz)
     elif ext == 'tif' or ext == 'tiff':
-        return load_geotiff(filepath, plot)
+        return load_geotiff(filepath, plot=plot, convert_to_xyz=convert_to_xyz)
     else:
         raise RuntimeError(f"Error: filetype {ext} not recognised.")
 
-def load_netcfd(filepath, plot=False, convert_to_xyz=False):
+def extract_region(xr_data):
+    """
+    Extracts the bounding box from an xarray dataarray
+    """
+    left = xr_data.coords['x'].values[0]
+    right = xr_data.coords['x'].values[-1]
+    top = xr_data.coords['y'].values[0]
+    bottom = xr_data.coords['y'].values[-1]
+
+    return [left, right, bottom, top]
+
+def xr_to_xyz(xr_data):
+    """
+    Converts an xarray dataarray into a pandas dataframe.
+    This requires the input coordinates to be named (x,y) and the elevation to be named z
+    """
+    xyz_data = xr_data.to_dataframe()
+    xyz_data = xyz_data.reset_index()
+    xyz_data = xyz_data[['x', 'y', 'z']]
+    return xyz_data
+
+def load_netcdf(filepath, plot=False, convert_to_xyz=False):
     xr_data = xr.open_dataarray(filepath).astype('float32')
+    xr_data = xr_data.rename('z')
+    xr_data = xr_data.rename({'lon': 'x', 'lat': 'y'})
 
     print(f"Resolution: {xr_data.values.shape}")
 
@@ -28,63 +52,39 @@ def load_netcfd(filepath, plot=False, convert_to_xyz=False):
         xr_data.plot()
         plt.show()
 
+    region = extract_region(xr_data)
+
     if convert_to_xyz:
-        # we might lose some metadata with the `to_dataframe()` conversion here, but that's OK as we'll just want a bunch of xyz
-        # independent of the original data file here in the future. Good to keep in mind, though, and ensure that the metadata
-        # is correct and in the right unit etc.
-        xyz_data = xr_data.to_dataframe()
-        xyz_data = xyz_data.reset_index()
-        xyz_data.rename(columns={'lon': 'x', 'lat': 'y', 'elevation': 'z'}, inplace=True)
-        xyz_data = xyz_data[['x', 'y', 'z']]  # `blockmedian()` requires columns in the right order!!!
-        return xyz_data
+        xyz_data = xr_to_xyz(xr_data)
+
+        return xyz_data, region
     else:
-        return xr_data
+        return xr_data, region
 
-def load_geotiff(filepath, plot=False, filter_nodata=True):
+def load_geotiff(filepath, plot=False, convert_to_xyz=False, filter_nodata=True):
     """Loads geotiff file as GMT-consumable pandas dataframe"""
+    xr_data = xr.open_rasterio(filepath, parse_coordinates=True)
+    xr_data = xr_data.squeeze('band') # Remove band if present
+    xr_data = xr_data.rename('z')
 
-    dataset = rasterio.open(filepath)
-    print(f"Number of bands: {dataset.count}")
-    print(f"Resolution: {dataset.width}, {dataset.height}")
-    print(f"CRS: {dataset.crs}")
+    print(f"Number of bands: {xr_data.coords['band'].values}")
+    print(f"Resolution: ({xr_data.sizes['x']}, {xr_data.sizes['y']})")
+    print(f"CRS: {xr_data.crs}")
 
     if plot:
-        show(dataset)
+        xr_data.plot()
+        plt.show()
 
-    bounds = dataset.bounds
-    left = bounds.left
-    right = bounds.right
-    top = bounds.top
-    bottom = bounds.bottom
+    region = extract_region(xr_data)
 
-    x_res = dataset.width
-    y_res = dataset.height
+    if convert_to_xyz:
+        xyz_data = xr_to_xyz(xr_data)
 
-    # Get positions of upper-right corner of pixels
-    x = np.linspace(left, right, x_res)
-    y = np.linspace(top, bottom, y_res)
+        if filter_nodata:
+            # filter out nodata values
+            for nodata_val in xr_data.nodatavals:
+                xyz_data.where(xyz_data['z'] != nodata_val, inplace=True)
 
-    # Recentre pixel locations
-    dx = abs(right - left)/(x_res-1)
-    dy = abs(top - bottom)/(y_res-1)
-    x += dx/2
-    y -= dy/2 # negative due to orientation
-
-    # Form array of points
-    x, y = np.meshgrid(x, y)
-    z = dataset.read()
-
-    # Convert to dataframe
-    df = pd.DataFrame()
-    df['x'] = x.flatten()
-    df['y'] = y.flatten()
-    df['z'] = z.flatten()
-
-    region = [bounds.left, bounds.right, bounds.bottom, bounds.top]
-
-    if filter_nodata:
-        # filter out nodata values
-        for nodata_val in dataset.nodatavals:
-            df.where(df['z'] != nodata_val, inplace=True)
-
-    return df, region
+        return xyz_data, region
+    else:
+        return xr_data, region
