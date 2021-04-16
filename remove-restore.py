@@ -45,19 +45,27 @@ def main():
     parser.add_argument('filenames', nargs='+', help='sources to combine with the base grid')
     parser.add_argument('--base', required=True, help='base grid')
     parser.add_argument('--regrid_base', action='store_true', help='base grid')
+    parser.add_argument('--spacing', help='output grid spacing')
     args = parser.parse_args()
 
     filenames = args.filenames
     base_filepath = args.base
     filepath = filenames[0]
+    region_of_interest = [-123.772, -122.809, 48.366, 48.893] # TODO make this a parameter
 
     # Create base grid
-    base_grid, initial_base_region = load_source(base_filepath, plot=False)
-
-    region_of_interest = [-125, -122, 48, 49]
-    base_grid = grdcut(base_grid, region=region_of_interest) # crop grid
-
-    spacing = float(base_grid.y[1] - base_grid.y[0])
+    if args.spacing:
+        spacing = args.spacing
+        base_grid_xyz, initial_base_region = load_source(
+            base_filepath, convert_to_xyz=True
+        )
+        base_grid = form_grid(base_grid_xyz, region=region_of_interest, spacing=spacing)
+    else:
+        base_grid, initial_base_region = load_source(
+            base_filepath, convert_to_xyz=False
+        )
+        base_grid = grdcut(base_grid, region=region_of_interest) # crop grid
+        spacing = float(base_grid.y[1] - base_grid.y[0])
 
     print("Loading update grid")
     xyz_data, region = load_source(filepath, plot=False, convert_to_xyz=True)
