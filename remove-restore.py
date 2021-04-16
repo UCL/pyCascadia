@@ -35,6 +35,10 @@ def region_to_str(region):
 def extract_region(grid):
     return [float(grid.x[0]), float(grid.x[-1]), float(grid.y[0]), float(grid.y[-1])]
 
+def min_regions(region1, region2):
+    """Returns the smaller of the two regions (i.e. the intersection)"""
+    return [max(region1[0], region2[0]), min(region1[1], region2[1]), max(region1[2], region2[2]), min(region1[3], region2[3])]
+
 def main():
     # Handle arguments
     parser = argparse.ArgumentParser(description='Combine multiple bathymmetry sources into a single grid')
@@ -58,8 +62,10 @@ def main():
     print("Loading update grid")
     xyz_data, region = load_source(filepath, plot=False, convert_to_xyz=True)
 
+    minimal_region = min_regions(region, region_of_interest)
+
     print("Blockmedian update grid")
-    bmd = blockmedian(xyz_data, spacing=spacing, region=region)
+    bmd = blockmedian(xyz_data, spacing=spacing, region=minimal_region)
 
     print("Find z in base grid")
     base_pts = grdtrack(bmd, base_grid, 'base_z', interpolation='n')
