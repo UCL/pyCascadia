@@ -47,8 +47,6 @@ def main():
     base_filepath = args.base
     filepath = filenames[0]
 
-    nodata_val = 999999.0 # TODO can we safely add this to CLI arguments?
-
     # Create base grid
     base_grid, initial_base_region = load_source(base_filepath, plot=False)
 
