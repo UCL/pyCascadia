@@ -44,7 +44,9 @@ def xr_to_xyz(xr_data):
 def load_netcdf(filepath, plot=False, convert_to_xyz=False):
     xr_data = xr.open_dataarray(filepath).astype('float32')
     xr_data = xr_data.rename('z')
-    xr_data = xr_data.rename({'lon': 'x', 'lat': 'y'})
+    if 'lon' in xr_data.dims:
+        # assume lat is also a dimension
+        xr_data = xr_data.rename({'lon': 'x', 'lat': 'y'})
 
     print(f"Resolution: {xr_data.values.shape}")
 
