@@ -57,19 +57,18 @@ def main():
     # Create base grid
     if args.spacing:
         spacing = float(args.spacing)
-        base_grid_xyz, initial_base_region = load_source(
+        base_grid_xyz, initial_base_region, initial_spacing = load_source(
             base_filepath, convert_to_xyz=True
         )
         base_grid = form_grid(base_grid_xyz, region=region_of_interest, spacing=spacing)
     else:
-        base_grid, initial_base_region = load_source(
+        base_grid, initial_base_region, spacing = load_source(
             base_filepath, convert_to_xyz=False
         )
         base_grid = grdcut(base_grid, region=region_of_interest) # crop grid
-        spacing = float(base_grid.y[1] - base_grid.y[0])
 
     print("Loading update grid")
-    xyz_data, region = load_source(filepath, plot=False, convert_to_xyz=True)
+    xyz_data, region, update_spacing = load_source(filepath, plot=False, convert_to_xyz=True)
 
     minimal_region = min_regions(region, region_of_interest)
 

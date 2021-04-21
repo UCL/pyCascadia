@@ -31,6 +31,12 @@ def extract_region(xr_data):
 
     return [left, right, bottom, top]
 
+def extract_spacing(xr_data):
+    """
+    Extracts spacing from xarray dataarray (assumes same in both directions)
+    """
+    return abs(float(xr_data.y[1] - xr_data.y[0]))
+
 def xr_to_xyz(xr_data):
     """
     Converts an xarray dataarray into a pandas dataframe.
@@ -55,13 +61,14 @@ def load_netcdf(filepath, plot=False, convert_to_xyz=False):
         plt.show()
 
     region = extract_region(xr_data)
+    spacing = extract_spacing(xr_data)
 
     if convert_to_xyz:
         xyz_data = xr_to_xyz(xr_data)
 
-        return xyz_data, region
+        return xyz_data, region, spacing
     else:
-        return xr_data, region
+        return xr_data, region, spacing
 
 def load_geotiff(filepath, plot=False, convert_to_xyz=False, filter_nodata=True):
     """Loads geotiff file as GMT-consumable pandas dataframe"""
@@ -78,6 +85,7 @@ def load_geotiff(filepath, plot=False, convert_to_xyz=False, filter_nodata=True)
         plt.show()
 
     region = extract_region(xr_data)
+    spacing = extract_spacing(xr_data)
 
     if convert_to_xyz:
         xyz_data = xr_to_xyz(xr_data)
@@ -87,6 +95,6 @@ def load_geotiff(filepath, plot=False, convert_to_xyz=False, filter_nodata=True)
             for nodata_val in xr_data.nodatavals:
                 xyz_data.where(xyz_data['z'] != nodata_val, inplace=True)
 
-        return xyz_data, region
+        return xyz_data, region, spacing
     else:
-        return xr_data, region
+        return xr_data, region, spacing
