@@ -55,7 +55,7 @@ def main():
 
     # Create base grid
     if args.spacing:
-        spacing = args.spacing
+        spacing = float(args.spacing)
         base_grid_xyz, initial_base_region = load_source(
             base_filepath, convert_to_xyz=True
         )
@@ -89,7 +89,7 @@ def main():
     diff.to_csv(diff_xyz_fname, sep=' ', header=False, index=False)
 
     base_region = extract_region(base_grid) # must be calcd from base grid to properly align grids
-    os.system(f'gmt nearneighbor {diff_xyz_fname} -G{diff_grid_fname} -R{region_to_str(base_region)} -I{spacing} -S{spacing} -N4 -E0 -V')
+    os.system(f'gmt nearneighbor {diff_xyz_fname} -G{diff_grid_fname} -R{region_to_str(base_region)} -I{spacing} -S{2*spacing} -N4 -E0 -V')
     filtered_update = grdfilter(diff_grid_fname, filter='b3', distance='p')
 
     # Cleanup files
