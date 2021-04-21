@@ -87,7 +87,7 @@ def main():
     diff['y'] = base_pts['y']
     diff['z'] = base_pts['z'] - base_pts['base_z']
 
-    diff.drop(diff[diff.z.abs() < args.difference_threshold].index, inplace=True) # Remove small differences
+    diff.drop(diff[diff.z.abs() < args.difference_threshold].index, inplace=True) # Filter out small differences
 
     diff_xyz_fname = "diff.xyz"
     diff_grid_fname = "diff.nc"
