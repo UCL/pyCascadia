@@ -46,7 +46,7 @@ def main():
     parser.add_argument('--base', required=True, help='base grid')
     parser.add_argument('--regrid_base', action='store_true', help='base grid')
     parser.add_argument('--spacing', help='output grid spacing')
-    parser.add_argument('--difference_threshold', default=0.05, help='value above which differences will be added to the base grid') # default from GEBCO cookbook
+    parser.add_argument('--difference_threshold', default=0.0, help='value above which differences will be added to the base grid')
     args = parser.parse_args()
 
     filenames = args.filenames
