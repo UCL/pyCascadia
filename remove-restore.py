@@ -74,7 +74,9 @@ def main():
     minimal_region = min_regions(region, region_of_interest)
 
     print("Blockmedian update grid")
-    bmd = blockmedian(xyz_data, spacing=spacing, region=minimal_region)
+    bmd_spacing = max(update_spacing, spacing)
+    print(spacing, update_spacing, bmd_spacing)
+    bmd = blockmedian(xyz_data, spacing=bmd_spacing, region=minimal_region)
 
     print("Find z in base grid")
     base_pts = grdtrack(bmd, base_grid, 'base_z', interpolation='n')
@@ -88,12 +90,13 @@ def main():
     diff.drop(diff[diff.z.abs() < args.difference_threshold].index, inplace=True) # Remove small differences
 
     diff_xyz_fname = "diff.xyz"
-    diff_grid_fname = "diff.grd"
+    diff_grid_fname = "diff.nc"
     diff.to_csv(diff_xyz_fname, sep=' ', header=False, index=False)
 
     base_region = extract_region(base_grid) # must be calcd from base grid to properly align grids
-    os.system(f'gmt nearneighbor {diff_xyz_fname} -G{diff_grid_fname} -R{region_to_str(base_region)} -I{spacing} -S{2*spacing} -N4 -E0 -V')
-    filtered_update = grdfilter(diff_grid_fname, filter='b3', distance='p')
+    os.system(f'gmt nearneighbor {diff_xyz_fname} -G{diff_grid_fname} -R{region_to_str(base_region)} -I{spacing} -S{2*bmd_spacing} -N4 -E0 -V')
+    # filtered_update = grdfilter(diff_grid_fname, filter='b3', distance='p')
+    filtered_update, _, _ = load_source(diff_grid_fname)
 
     # Cleanup files
     os.remove(diff_grid_fname)
