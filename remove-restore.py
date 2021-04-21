@@ -52,7 +52,7 @@ def main():
     filenames = args.filenames
     base_filepath = args.base
     filepath = filenames[0]
-    region_of_interest = [-123.772, -122.809, 48.366, 48.893] # TODO make this a parameter
+    region_of_interest = [-123.3, -122.8, 48.700, 48.900] # TODO make this a parameter
 
     # Create base grid
     if args.spacing:
@@ -95,7 +95,6 @@ def main():
 
     base_region = extract_region(base_grid) # must be calcd from base grid to properly align grids
     os.system(f'gmt nearneighbor {diff_xyz_fname} -G{diff_grid_fname} -R{region_to_str(base_region)} -I{spacing} -S{2*bmd_spacing} -N4 -E0 -V')
-    # filtered_update = grdfilter(diff_grid_fname, filter='b3', distance='p')
     filtered_update, _, _ = load_source(diff_grid_fname)
 
     # Cleanup files
