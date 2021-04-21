@@ -46,6 +46,7 @@ def main():
     parser.add_argument('--base', required=True, help='base grid')
     parser.add_argument('--regrid_base', action='store_true', help='base grid')
     parser.add_argument('--spacing', help='output grid spacing')
+    parser.add_argument('--difference_threshold', default=0.05, help='value above which differences will be added to the base grid') # default from GEBCO cookbook
     args = parser.parse_args()
 
     filenames = args.filenames
@@ -83,6 +84,8 @@ def main():
     diff['x'] = base_pts['x']
     diff['y'] = base_pts['y']
     diff['z'] = base_pts['z'] - base_pts['base_z']
+
+    diff.drop(diff[diff.z.abs() < args.difference_threshold].index, inplace=True) # Remove small differences
 
     diff_xyz_fname = "diff.xyz"
     diff_grid_fname = "diff.grd"
