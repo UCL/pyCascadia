@@ -60,6 +60,7 @@ def main():
         base_grid_xyz, initial_base_region, initial_spacing = load_source(
             base_filepath, convert_to_xyz=True
         )
+        print(f"Regridding base grid from {initial_spacing} to {spacing}")
         base_grid = form_grid(base_grid_xyz, region=region_of_interest, spacing=spacing)
     else:
         base_grid, initial_base_region, spacing = load_source(
