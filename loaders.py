@@ -44,10 +44,10 @@ def extract_region(xr_data):
     """
     Extracts the bounding box from an xarray dataarray
     """
-    left = xr_data.coords['x'].values[0]
-    right = xr_data.coords['x'].values[-1]
-    top = xr_data.coords['y'].values[0]
-    bottom = xr_data.coords['y'].values[-1]
+    left = float(xr_data.x.min())
+    right = float(xr_data.x.max())
+    top = float(xr_data.y.max())
+    bottom = float(xr_data.y.min())
 
     return [left, right, bottom, top]
 
