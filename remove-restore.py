@@ -41,7 +41,7 @@ def resample_grid(in_fname, out_fname, region, spacing):
     """Resamples the grid using grdsample. Note that this operates on external files, not on already loaded grids."""
     os.system(f'gmt grdsample {in_fname} -G{out_fname} -R{region_to_str(region)} -I{spacing} -V')
 
-def calc_difference_grid(base_grid, update_grid, difference_threshold=0.0):
+def calc_diff_grid(base_grid, update_grid, diff_threshold=0.0):
     """Calculates difference grid for use in remove-restore"""
     print("Blockmedian update grid")
     max_spacing = max(update_grid.spacing, base_grid.spacing)
@@ -57,7 +57,7 @@ def calc_difference_grid(base_grid, update_grid, difference_threshold=0.0):
     diff['y'] = base_pts['y']
     diff['z'] = base_pts['z'] - base_pts['base_z']
 
-    diff[diff.z.abs() < difference_threshold]['z'] = 0.0 # Filter out small differences
+    diff[diff.z.abs() < diff_threshold]['z'] = 0.0 # Filter out small differences
 
     diff_xyz_fname = "diff.xyz"
     diff_grid_fname = "diff.nc"
@@ -80,7 +80,7 @@ def main():
     parser.add_argument('--base', required=True, help='base grid')
     parser.add_argument('--regrid_base', action='store_true', help='base grid')
     parser.add_argument('--spacing', type=float, help='output grid spacing')
-    parser.add_argument('--difference_threshold', default=0.0, help='value above which differences will be added to the base grid')
+    parser.add_argument('--diff_threshold', default=0.0, help='value above which differences will be added to the base grid')
     args = parser.parse_args()
 
     filenames = args.filenames
@@ -103,7 +103,7 @@ def main():
     print("Loading update grid")
     update_grid = Grid(filepath, convert_to_xyz=True)
 
-    diff_grid = calc_difference_grid(base_grid, update_grid, difference_threshold=args.difference_threshold)
+    diff_grid = calc_diff_grid(base_grid, update_grid, diff_threshold=args.diff_threshold)
 
     print("Update base grid")
     base_grid.grid.values += diff_grid.values
