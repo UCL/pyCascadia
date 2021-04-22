@@ -85,8 +85,9 @@ def main():
     args = parser.parse_args()
 
     filenames = args.filenames
-    base_filepath = args.base
-    filepath = filenames[0]
+    base_fname = args.base
+    diff_threshold = args.diff_threshold
+    output_fname = args.output
     region_of_interest = [-123.3, -122.8, 48.700, 48.900] # TODO make this a parameter
 
     # Create base grid
@@ -94,29 +95,32 @@ def main():
         spacing = args.spacing
         print(f"Regridding base grid to spacing {spacing}")
         resampled_base_fname = 'base_grid_resampled.nc'
-        resample_grid(base_filepath, resampled_base_fname, region_of_interest, spacing)
+        resample_grid(base_fname, resampled_base_fname, region_of_interest, spacing)
         base_grid = Grid(resampled_base_fname, convert_to_xyz=False)
         os.remove(resampled_base_fname)
     else:
-        base_grid = Grid(base_filepath, convert_to_xyz=False)
+        base_grid = Grid(base_fname, convert_to_xyz=False)
         base_grid.grdcut(region_of_interest)
-
-    print("Loading update grid")
-    update_grid = Grid(filepath, convert_to_xyz=True)
-
-    diff_grid = calc_diff_grid(base_grid, update_grid, diff_threshold=args.diff_threshold)
-
-    print("Update base grid")
-    base_grid.grid.values += diff_grid.values
-
-    base_grid.save_grid(args.output)
 
     fig, axes = plt.subplots(2,2)
     base_grid.plot(ax=axes[0,0])
-    diff_grid.plot(ax=axes[0,1])
+
+    # Update base grid
+    for fname in filenames:
+        print("Loading update grid")
+        update_grid = Grid(fname, convert_to_xyz=True)
+
+        diff_grid = calc_diff_grid(base_grid, update_grid, diff_threshold=diff_threshold)
+
+        print("Update base grid")
+        base_grid.grid.values += diff_grid.values
+
+    base_grid.plot(ax=axes[0,1])
     base_grid.grid.differentiate('x').plot(ax=axes[1,0])
     base_grid.grid.differentiate('y').plot(ax=axes[1,1])
     plt.show()
+
+    base_grid.save_grid(args.output)
 
 if __name__ == "__main__":
     main()
