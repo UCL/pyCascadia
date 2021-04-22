@@ -43,7 +43,7 @@ def main():
     parser.add_argument('filenames', nargs='+', help='sources to combine with the base grid')
     parser.add_argument('--base', required=True, help='base grid')
     parser.add_argument('--regrid_base', action='store_true', help='base grid')
-    parser.add_argument('--spacing', help='output grid spacing')
+    parser.add_argument('--spacing', type=float, help='output grid spacing')
     parser.add_argument('--difference_threshold', default=0.0, help='value above which differences will be added to the base grid')
     args = parser.parse_args()
 
@@ -54,7 +54,7 @@ def main():
 
     # Create base grid
     if args.spacing:
-        spacing = float(args.spacing)
+        spacing = args.spacing
         print(f"Regridding base grid to spacing {spacing}")
         resampled_base_fname = 'base_grid_resampled.nc'
         os.system(f'gmt grdsample {base_filepath} -G{resampled_base_fname} -R{region_to_str(region_of_interest)} -I{spacing} -V')
