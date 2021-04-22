@@ -78,7 +78,6 @@ def main():
     parser = argparse.ArgumentParser(description='Combine multiple bathymmetry sources into a single grid')
     parser.add_argument('filenames', nargs='+', help='sources to combine with the base grid')
     parser.add_argument('--base', required=True, help='base grid')
-    parser.add_argument('--regrid_base', action='store_true', help='base grid')
     parser.add_argument('--spacing', type=float, help='output grid spacing')
     parser.add_argument('--diff_threshold', default=0.0, help='value above which differences will be added to the base grid')
     parser.add_argument('--output', required=True, help='filename of final output')
