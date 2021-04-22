@@ -12,6 +12,7 @@ import matplotlib.pyplot as plt
 import argparse
 
 from loaders import load_source
+from grid import Grid
 
 def form_grid(xyz_data, region=None, spacing=None):
     """Creates grid from x,y,z points"""
