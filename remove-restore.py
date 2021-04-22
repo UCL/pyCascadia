@@ -101,9 +101,6 @@ def main():
         base_grid = Grid(base_fname, convert_to_xyz=False)
         base_grid.grdcut(region_of_interest)
 
-    fig, axes = plt.subplots(2,2)
-    base_grid.plot(ax=axes[0,0])
-
     # Update base grid
     for fname in filenames:
         print("Loading update grid")
@@ -114,7 +111,9 @@ def main():
         print("Update base grid")
         base_grid.grid.values += diff_grid.values
 
-    base_grid.plot(ax=axes[0,1])
+    fig, axes = plt.subplots(2,2)
+    base_grid.plot(ax=axes[0,0])
+    diff_grid.plot(ax=axes[0,1])
     base_grid.grid.differentiate('x').plot(ax=axes[1,0])
     base_grid.grid.differentiate('y').plot(ax=axes[1,1])
     plt.show()
