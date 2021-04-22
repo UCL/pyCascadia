@@ -57,11 +57,13 @@ def main():
     # Create base grid
     if args.spacing:
         spacing = float(args.spacing)
-        base_grid_xyz, initial_base_region, initial_spacing = load_source(
-            base_filepath, convert_to_xyz=True
+        print(f"Regridding base grid to spacing {spacing}")
+        resampled_base_fname = 'base_grid_resampled.nc'
+        os.system(f'gmt grdsample {base_filepath} -G{resampled_base_fname} -R{region_to_str(region_of_interest)} -I{spacing} -V')
+        base_grid, base_region, _ = load_source(
+            resampled_base_fname, convert_to_xyz=False
         )
-        print(f"Regridding base grid from {initial_spacing} to {spacing}")
-        base_grid = form_grid(base_grid_xyz, region=region_of_interest, spacing=spacing)
+        os.remove(resampled_base_fname)
     else:
         base_grid, initial_base_region, spacing = load_source(
             base_filepath, convert_to_xyz=False
