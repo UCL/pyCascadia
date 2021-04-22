@@ -24,3 +24,6 @@ class Grid:
 
     def plot(self, ax=None):
         self.grid.plot(ax=ax)
+
+    def save_grid(self, fname):
+        self.grid.to_netcdf(fname)
