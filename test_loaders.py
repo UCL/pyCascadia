@@ -1,13 +1,9 @@
 import pytest
 import loaders
 
-def test_geotiff_loader():
-    df = loaders.load_geotiff("./test_data/small_sample.tif")
-    print(df)
-
 def test_loader_equivalence():
-    df_geotiff, _, _ = loaders.load_geotiff("./test_data/small_sample.tif")
-    df_netcdf, _, _ = loaders.load_netcdf("./test_data/small_sample.nc")
+    df_geotiff, _, _ = loaders.load_source("./test_data/small_sample.tif")
+    df_netcdf, _, _ = loaders.load_source("./test_data/small_sample.nc")
 
     # geotiff and netcdf don't order the rows in the same way, so we sort for comparison
     # index ignored because otherwise they row index persists after sorting, and comparison doesn't work.
