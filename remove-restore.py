@@ -61,29 +61,24 @@ def main():
         spacing = args.spacing
         print(f"Regridding base grid to spacing {spacing}")
         resampled_base_fname = 'base_grid_resampled.nc'
-        os.system(f'gmt grdsample {base_filepath} -G{resampled_base_fname} -R{region_to_str(region_of_interest)} -I{spacing} -V')
-        base_grid, base_region, _ = load_source(
-            resampled_base_fname, convert_to_xyz=False
-        )
+        resample_grid(base_filepath, resampled_base_fname, region_of_interest, spacing)
+        base_grid = Grid(resampled_base_fname, convert_to_xyz=False)
         os.remove(resampled_base_fname)
     else:
-        base_grid, initial_base_region, spacing = load_source(
-            base_filepath, convert_to_xyz=False
-        )
-        base_grid = grdcut(base_grid, region=region_of_interest) # crop grid
+        base_grid = Grid(base_filepath, convert_to_xyz=False)
+        base_grid.grdcut(region_of_interest)
 
     print("Loading update grid")
-    xyz_data, region, update_spacing = load_source(filepath, plot=False, convert_to_xyz=True)
+    update_grid = Grid(filepath, convert_to_xyz=True)
 
-    minimal_region = min_regions(region, region_of_interest)
 
     print("Blockmedian update grid")
-    bmd_spacing = max(update_spacing, spacing)
-    print(spacing, update_spacing, bmd_spacing)
-    bmd = blockmedian(xyz_data, spacing=bmd_spacing, region=minimal_region)
+    max_spacing = max(update_grid.spacing, base_grid.spacing)
+    minimal_region = min_regions(update_grid.region, region_of_interest)
+    bmd = blockmedian(update_grid.xyz, spacing=max_spacing, region=minimal_region)
 
     print("Find z in base grid")
-    base_pts = grdtrack(bmd, base_grid, 'base_z', interpolation='l')
+    base_pts = grdtrack(bmd, base_grid.grid, 'base_z', interpolation='l')
 
     print ("Create difference grid")
     diff = pd.DataFrame()
@@ -91,14 +86,13 @@ def main():
     diff['y'] = base_pts['y']
     diff['z'] = base_pts['z'] - base_pts['base_z']
 
-    diff.drop(diff[diff.z.abs() < args.difference_threshold].index, inplace=True) # Filter out small differences
+    diff[diff.z.abs() < args.difference_threshold]['z'] = 0.0 # Filter out small differences
 
     diff_xyz_fname = "diff.xyz"
     diff_grid_fname = "diff.nc"
     diff.to_csv(diff_xyz_fname, sep=' ', header=False, index=False)
 
-    base_region = extract_region(base_grid) # must be calcd from base grid to properly align grids
-    os.system(f'gmt nearneighbor {diff_xyz_fname} -G{diff_grid_fname} -R{region_to_str(base_region)} -I{spacing} -S{2*bmd_spacing} -N4 -E0 -V')
+    os.system(f'gmt nearneighbor {diff_xyz_fname} -G{diff_grid_fname} -R{region_to_str(base_grid.region)} -I{base_grid.spacing} -S{2*max_spacing} -N4 -E0 -V')
     filtered_update, _, _ = load_source(diff_grid_fname)
 
     # Cleanup files
@@ -106,13 +100,13 @@ def main():
     os.remove(diff_xyz_fname)
 
     print("Update base grid")
-    base_grid.values += filtered_update.values
+    base_grid.grid.values += filtered_update.values
 
     fig, axes = plt.subplots(2,2)
     base_grid.plot(ax=axes[0,0])
     filtered_update.plot(ax=axes[0,1])
-    base_grid.differentiate('x').plot(ax=axes[1,0])
-    base_grid.differentiate('y').plot(ax=axes[1,1])
+    base_grid.grid.differentiate('x').plot(ax=axes[1,0])
+    base_grid.grid.differentiate('y').plot(ax=axes[1,1])
     plt.show()
 
 if __name__ == "__main__":
