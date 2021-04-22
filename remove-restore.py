@@ -37,6 +37,10 @@ def min_regions(region1, region2):
     """Returns the smaller of the two regions (i.e. the intersection)"""
     return [max(region1[0], region2[0]), min(region1[1], region2[1]), max(region1[2], region2[2]), min(region1[3], region2[3])]
 
+def resample_grid(in_fname, out_fname, region, spacing):
+    """Resamples the grid using grdsample. Note that this operates on external files, not on already loaded grids."""
+    os.system(f'gmt grdsample {in_fname} -G{out_fname} -R{region_to_str(region)} -I{spacing} -V')
+
 def main():
     # Handle arguments
     parser = argparse.ArgumentParser(description='Combine multiple bathymmetry sources into a single grid')
