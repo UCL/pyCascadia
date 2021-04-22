@@ -2,7 +2,8 @@
 Grid class representing a grid of data either in xarray format or in pandas dataframe format
 """
 
-from loaders import load_source, xr_to_xyz, filter_nodata
+from pygmt import grdcut
+from loaders import load_source, xr_to_xyz, filter_nodata, extract_region
 
 class Grid:
     def __init__(self, fname, convert_to_xyz=False):
@@ -13,7 +14,7 @@ class Grid:
     def grdcut(self, region):
         """Crops grid using grdcut"""
         self.grid = grdcut(self.grid, region=region)
-        self.region = region
+        self.region = extract_region(self.grid)
 
     def as_xyz(self):
         """Returns pandas dataframe representation"""
