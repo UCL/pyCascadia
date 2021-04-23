@@ -14,6 +14,6 @@ def test_loader_equivalence():
     diff_y = abs(sorted_geotiff.y - sorted_netcdf.y)
     diff_z = abs(sorted_geotiff.values - sorted_netcdf.values)
     
-    assert diff_x.max() < 1.e-12
-    assert diff_z.max() < 1.e-12
-    assert diff_y.max() < 1.e-12
+    assert diff_x.max() == pytest.approx(0.0)
+    assert diff_z.max() == pytest.approx(0.0)
+    assert diff_y.max() == pytest.approx(0.0)
