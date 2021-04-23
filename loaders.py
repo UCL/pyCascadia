@@ -45,7 +45,7 @@ def extract_spacing(xr_data):
     """
     Extracts spacing from xarray dataarray (assumes same in both directions)
     """
-    return abs(float(xr_data.y[1] - xr_data.y[0]))
+    return abs(float(xr_data.x[1] - xr_data.x[0]))
 
 def xr_to_xyz(xr_data):
     """
@@ -79,10 +79,12 @@ def load_geotiff(filepath):
     """Loads geotiff file"""
     xr_data = xr.open_rasterio(filepath, parse_coordinates=True)
     xr_data = xr_data.squeeze('band') # Remove band if present
+    del xr_data['band']
     xr_data = xr_data.rename('z')
 
-    print(f"Number of bands: {xr_data.coords['band'].values}")
     print(f"Resolution: ({xr_data.sizes['x']}, {xr_data.sizes['y']})")
     print(f"CRS: {xr_data.crs}")
+
+    xr_data = xr_data.sortby('y')
 
     return xr_data
