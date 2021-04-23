@@ -19,6 +19,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: Install system dependencies
+        run: sudo apt-get install -y gmt gmt-dcw gmt-gshhg
+
       - name: Setup python
         uses: actions/setup-python@v1
         with:
