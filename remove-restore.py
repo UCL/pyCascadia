@@ -99,7 +99,7 @@ def main():
         os.remove(resampled_base_fname)
     else:
         base_grid = Grid(base_fname, convert_to_xyz=False)
-        base_grid.grdcut(region_of_interest)
+        base_grid.crop(region_of_interest)
 
     # Update base grid
     for fname in filenames:
