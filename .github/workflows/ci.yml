@@ -20,7 +20,7 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Install system dependencies
-        run: sudo apt-get install -y gmt gmt-dcw gmt-gshhg
+        run: sudo apt-get install -y gmt gmt-dcw gmt-gshhg libgmt-dev
 
       - name: Setup python
         uses: actions/setup-python@v1
