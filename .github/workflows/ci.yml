@@ -24,8 +24,9 @@ jobs:
         with:
           python-version: ${{ matrix.python }}
           conda-channels: conda-forge
-      - run: |
-        conda install pip pygmt
+
+      - name: Install pip and pygmt
+        run: conda install pip pygmt
 
       - name: Install pipenv environment
         run: pip install pipenv && pipenv --python=$(conda run which python) --site-packages install
