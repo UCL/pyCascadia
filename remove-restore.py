@@ -35,36 +35,53 @@ def region_to_str(region):
 def extract_region(grid):
     return [float(grid.x[0]), float(grid.x[-1]), float(grid.y[0]), float(grid.y[-1])]
 
+def min_regions(region1, region2):
+    """Returns the smaller of the two regions (i.e. the intersection)"""
+    return [max(region1[0], region2[0]), min(region1[1], region2[1]), max(region1[2], region2[2]), min(region1[3], region2[3])]
+
 def main():
     # Handle arguments
     parser = argparse.ArgumentParser(description='Combine multiple bathymmetry sources into a single grid')
     parser.add_argument('filenames', nargs='+', help='sources to combine with the base grid')
     parser.add_argument('--base', required=True, help='base grid')
     parser.add_argument('--regrid_base', action='store_true', help='base grid')
+    parser.add_argument('--spacing', help='output grid spacing')
+    parser.add_argument('--difference_threshold', default=0.0, help='value above which differences will be added to the base grid')
     args = parser.parse_args()
 
     filenames = args.filenames
     base_filepath = args.base
     filepath = filenames[0]
-
-    nodata_val = 999999.0 # TODO can we safely add this to CLI arguments?
+    region_of_interest = [-123.3, -122.8, 48.700, 48.900] # TODO make this a parameter
 
     # Create base grid
-    base_grid, initial_base_region = load_source(base_filepath, plot=False)
-
-    region_of_interest = [-125, -122, 48, 49]
-    base_grid = grdcut(base_grid, region=region_of_interest) # crop grid
-
-    spacing = float(base_grid.y[1] - base_grid.y[0])
+    if args.spacing:
+        spacing = float(args.spacing)
+        print(f"Regridding base grid to spacing {spacing}")
+        resampled_base_fname = 'base_grid_resampled.nc'
+        os.system(f'gmt grdsample {base_filepath} -G{resampled_base_fname} -R{region_to_str(region_of_interest)} -I{spacing} -V')
+        base_grid, base_region, _ = load_source(
+            resampled_base_fname, convert_to_xyz=False
+        )
+        os.remove(resampled_base_fname)
+    else:
+        base_grid, initial_base_region, spacing = load_source(
+            base_filepath, convert_to_xyz=False
+        )
+        base_grid = grdcut(base_grid, region=region_of_interest) # crop grid
 
     print("Loading update grid")
-    xyz_data, region = load_source(filepath, plot=False, convert_to_xyz=True)
+    xyz_data, region, update_spacing = load_source(filepath, plot=False, convert_to_xyz=True)
+
+    minimal_region = min_regions(region, region_of_interest)
 
     print("Blockmedian update grid")
-    bmd = blockmedian(xyz_data, spacing=spacing, region=region)
+    bmd_spacing = max(update_spacing, spacing)
+    print(spacing, update_spacing, bmd_spacing)
+    bmd = blockmedian(xyz_data, spacing=bmd_spacing, region=minimal_region)
 
     print("Find z in base grid")
-    base_pts = grdtrack(bmd, base_grid, 'base_z', interpolation='n')
+    base_pts = grdtrack(bmd, base_grid, 'base_z', interpolation='l')
 
     print ("Create difference grid")
     diff = pd.DataFrame()
@@ -72,13 +89,15 @@ def main():
     diff['y'] = base_pts['y']
     diff['z'] = base_pts['z'] - base_pts['base_z']
 
+    diff.drop(diff[diff.z.abs() < args.difference_threshold].index, inplace=True) # Filter out small differences
+
     diff_xyz_fname = "diff.xyz"
-    diff_grid_fname = "diff.grd"
+    diff_grid_fname = "diff.nc"
     diff.to_csv(diff_xyz_fname, sep=' ', header=False, index=False)
 
     base_region = extract_region(base_grid) # must be calcd from base grid to properly align grids
-    os.system(f'gmt nearneighbor {diff_xyz_fname} -G{diff_grid_fname} -R{region_to_str(base_region)} -I{spacing} -S{spacing} -N4 -E0 -V')
-    filtered_update = grdfilter(diff_grid_fname, filter='b3', distance='p')
+    os.system(f'gmt nearneighbor {diff_xyz_fname} -G{diff_grid_fname} -R{region_to_str(base_region)} -I{spacing} -S{2*bmd_spacing} -N4 -E0 -V')
+    filtered_update, _, _ = load_source(diff_grid_fname)
 
     # Cleanup files
     os.remove(diff_grid_fname)
