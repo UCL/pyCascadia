@@ -19,17 +19,16 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Install system dependencies
-        run: sudo apt-get install -y gmt gmt-dcw gmt-gshhg libgmt-dev
-
-      - name: Setup python
-        uses: actions/setup-python@v1
+      - name: Setup conda
+        uses: s-weigand/setup-conda@v1
         with:
           python-version: ${{ matrix.python }}
-          architecture: x64
+          conda-channels: conda-forge
+      - run: |
+        conda install pip pygmt
 
       - name: Install pipenv environment
-        run: pip install pipenv && pipenv install
+        run: pip install pipenv && pipenv --python=$(conda run which python) --site-packages install
 
       - name: Test
         run: pipenv run pytest
