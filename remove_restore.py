@@ -54,6 +54,7 @@ def main():
     parser.add_argument('--base', required=True, help='base grid')
     parser.add_argument('--spacing', type=float, help='output grid spacing')
     parser.add_argument('--diff_threshold', default=0.0, help='value above which differences will be added to the base grid')
+    parser.add_argument('--plot', action='store_true', help='plot final output before saving')
     parser.add_argument('--output', required=True, help='filename of final output')
     args = parser.parse_args()
 
@@ -79,12 +80,13 @@ def main():
         print("Update base grid")
         base_grid.grid.values += diff_grid.values
 
-    fig, axes = plt.subplots(2,2)
-    base_grid.plot(ax=axes[0,0])
-    diff_grid.plot(ax=axes[0,1])
-    base_grid.grid.differentiate('x').plot(ax=axes[1,0])
-    base_grid.grid.differentiate('y').plot(ax=axes[1,1])
-    plt.show()
+    if args.plot:
+        fig, axes = plt.subplots(2,2)
+        base_grid.plot(ax=axes[0,0])
+        diff_grid.plot(ax=axes[0,1])
+        base_grid.grid.differentiate('x').plot(ax=axes[1,0])
+        base_grid.grid.differentiate('y').plot(ax=axes[1,1])
+        plt.show()
 
     base_grid.save_grid(args.output)
 
