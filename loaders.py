@@ -7,27 +7,37 @@ import matplotlib.pyplot as plt
 Helper functions for loading different types of data sources as xyz dataframes
 """
 
-def load_source(filepath, plot=False, convert_to_xyz=False):
+def load_source(filepath, plot=False, convert_to_xyz=False, filter_nodata=True):
     """
     Loads an xarray dataarray from file, optionally converting it to an xyz dataframe
     """
     print(f"Loading {filepath}")
     ext = filepath.split('.')[-1]
     if ext == 'nc':
-        return load_netcdf(filepath, plot=plot, convert_to_xyz=convert_to_xyz)
+        xr_data = load_netcdf(filepath)
     elif ext == 'tif' or ext == 'tiff':
-        return load_geotiff(filepath, plot=plot, convert_to_xyz=convert_to_xyz)
+        xr_data = load_geotiff(filepath)
     else:
         raise RuntimeError(f"Error: filetype {ext} not recognised.")
+
+    if plot:
+        xr_data.plot()
+        plt.show()
+
+    region = extract_region(xr_data)
+    spacing = extract_spacing(xr_data)
+
+    return xr_data, region, spacing
+
 
 def extract_region(xr_data):
     """
     Extracts the bounding box from an xarray dataarray
     """
-    left = xr_data.coords['x'].values[0]
-    right = xr_data.coords['x'].values[-1]
-    top = xr_data.coords['y'].values[0]
-    bottom = xr_data.coords['y'].values[-1]
+    left = float(xr_data.x.min())
+    right = float(xr_data.x.max())
+    top = float(xr_data.y.max())
+    bottom = float(xr_data.y.min())
 
     return [left, right, bottom, top]
 
@@ -35,7 +45,7 @@ def extract_spacing(xr_data):
     """
     Extracts spacing from xarray dataarray (assumes same in both directions)
     """
-    return abs(float(xr_data.y[1] - xr_data.y[0]))
+    return abs(float(xr_data.x[1] - xr_data.x[0]))
 
 def xr_to_xyz(xr_data):
     """
@@ -47,7 +57,13 @@ def xr_to_xyz(xr_data):
     xyz_data = xyz_data[['x', 'y', 'z']]
     return xyz_data
 
-def load_netcdf(filepath, plot=False, convert_to_xyz=False):
+def filter_nodata(xyz_data, nodatavals):
+    """Removes values in nodatavals from input"""
+    for nodata_val in nodatavals:
+        xyz_data.where(xyz_data['z'] != nodata_val, inplace=True)
+
+def load_netcdf(filepath):
+    """Loads netcdf file"""
     xr_data = xr.open_dataarray(filepath).astype('float32')
     xr_data = xr_data.rename('z')
     if 'lon' in xr_data.dims:
@@ -56,45 +72,19 @@ def load_netcdf(filepath, plot=False, convert_to_xyz=False):
 
     print(f"Resolution: {xr_data.values.shape}")
 
-    if plot:
-        xr_data.plot()
-        plt.show()
+    return xr_data
 
-    region = extract_region(xr_data)
-    spacing = extract_spacing(xr_data)
 
-    if convert_to_xyz:
-        xyz_data = xr_to_xyz(xr_data)
-
-        return xyz_data, region, spacing
-    else:
-        return xr_data, region, spacing
-
-def load_geotiff(filepath, plot=False, convert_to_xyz=False, filter_nodata=True):
-    """Loads geotiff file as GMT-consumable pandas dataframe"""
+def load_geotiff(filepath):
+    """Loads geotiff file"""
     xr_data = xr.open_rasterio(filepath, parse_coordinates=True)
     xr_data = xr_data.squeeze('band') # Remove band if present
+    del xr_data['band']
     xr_data = xr_data.rename('z')
 
-    print(f"Number of bands: {xr_data.coords['band'].values}")
     print(f"Resolution: ({xr_data.sizes['x']}, {xr_data.sizes['y']})")
     print(f"CRS: {xr_data.crs}")
 
-    if plot:
-        xr_data.plot()
-        plt.show()
+    xr_data = xr_data.sortby('y')
 
-    region = extract_region(xr_data)
-    spacing = extract_spacing(xr_data)
-
-    if convert_to_xyz:
-        xyz_data = xr_to_xyz(xr_data)
-
-        if filter_nodata:
-            # filter out nodata values
-            for nodata_val in xr_data.nodatavals:
-                xyz_data.where(xyz_data['z'] != nodata_val, inplace=True)
-
-        return xyz_data, region, spacing
-    else:
-        return xr_data, region, spacing
+    return xr_data
