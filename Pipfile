@@ -8,6 +8,7 @@ pygmt = "*"
 matplotlib = "*"
 pytest = "*"
 rasterio = "*"
+jupyter = "*"
 
 [dev-packages]
 

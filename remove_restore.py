@@ -13,33 +13,7 @@ import argparse
 
 from loaders import load_source
 from grid import Grid
-
-def form_grid(xyz_data, region=None, spacing=None):
-    """Creates grid from x,y,z points"""
-
-    if region is None:
-        raise RuntimeError("region not specified")
-    if spacing is None:
-        raise RuntimeError("spacing not specified")
-
-    print("Calculating block median")
-    bmd = blockmedian(xyz_data, spacing=spacing, region=region)
-
-    print("Gridding")
-    grid = surface(x=bmd['x'], y=bmd['y'], z=bmd['z'], region=region, spacing=spacing)
-
-    return grid
-
-def region_to_str(region):
-    return '/'.join(map(str, region))
-
-def min_regions(region1, region2):
-    """Returns the smaller of the two regions (i.e. the intersection)"""
-    return [max(region1[0], region2[0]), min(region1[1], region2[1]), max(region1[2], region2[2]), min(region1[3], region2[3])]
-
-def resample_grid(in_fname, out_fname, region, spacing):
-    """Resamples the grid using grdsample. Note that this operates on external files, not on already loaded grids."""
-    os.system(f'gmt grdsample {in_fname} -G{out_fname} -R{region_to_str(region)} -I{spacing} -V')
+from utility import region_to_str, min_regions
 
 def calc_diff_grid(base_grid, update_grid, diff_threshold=0.0):
     """Calculates difference grid for use in remove-restore"""
@@ -80,6 +54,7 @@ def main():
     parser.add_argument('--base', required=True, help='base grid')
     parser.add_argument('--spacing', type=float, help='output grid spacing')
     parser.add_argument('--diff_threshold', default=0.0, help='value above which differences will be added to the base grid')
+    parser.add_argument('--plot', action='store_true', help='plot final output before saving')
     parser.add_argument('--output', required=True, help='filename of final output')
     args = parser.parse_args()
 
@@ -90,16 +65,10 @@ def main():
     region_of_interest = [-123.3, -122.8, 48.700, 48.900] # TODO make this a parameter
 
     # Create base grid
+    base_grid = Grid(base_fname, convert_to_xyz=False)
+    base_grid.crop(region_of_interest)
     if args.spacing:
-        spacing = args.spacing
-        print(f"Regridding base grid to spacing {spacing}")
-        resampled_base_fname = 'base_grid_resampled.nc'
-        resample_grid(base_fname, resampled_base_fname, region_of_interest, spacing)
-        base_grid = Grid(resampled_base_fname, convert_to_xyz=False)
-        os.remove(resampled_base_fname)
-    else:
-        base_grid = Grid(base_fname, convert_to_xyz=False)
-        base_grid.grdcut(region_of_interest)
+        base_grid.resample(args.spacing)
 
     # Update base grid
     for fname in filenames:
@@ -111,12 +80,13 @@ def main():
         print("Update base grid")
         base_grid.grid.values += diff_grid.values
 
-    fig, axes = plt.subplots(2,2)
-    base_grid.plot(ax=axes[0,0])
-    diff_grid.plot(ax=axes[0,1])
-    base_grid.grid.differentiate('x').plot(ax=axes[1,0])
-    base_grid.grid.differentiate('y').plot(ax=axes[1,1])
-    plt.show()
+    if args.plot:
+        fig, axes = plt.subplots(2,2)
+        base_grid.plot(ax=axes[0,0])
+        diff_grid.plot(ax=axes[0,1])
+        base_grid.grid.differentiate('x').plot(ax=axes[1,0])
+        base_grid.grid.differentiate('y').plot(ax=axes[1,1])
+        plt.show()
 
     base_grid.save_grid(args.output)
 
