@@ -86,14 +86,16 @@ def main():
 
     if args.plot:
         fig, axes = plt.subplots(2,2)
-        base_grid.plot(ax=axes[0,0])
-        axes[0,0].set_title("Resultant Grid")
-        diff_grid.plot(ax=axes[0,1])
-        axes[0,1].set_title("Last difference")
+        initial_base_grid = Grid(base_fname, convert_to_xyz=False)
+        initial_base_grid.crop(region_of_interest)
+        initial_base_grid.plot(ax=axes[0,0])
+        axes[0,0].set_title("Initial Grid")
+        base_grid.plot(ax=axes[0,1])
+        axes[0,1].set_title("Final Grid")
         base_grid.grid.differentiate('x').plot(ax=axes[1,0])
-        axes[1,0].set_title("x Derivative of Result")
+        axes[1,0].set_title("x Derivative of Final Grid")
         base_grid.grid.differentiate('y').plot(ax=axes[1,1])
-        axes[1,1].set_title("y Derivative of Result")
+        axes[1,1].set_title("y Derivative of Final Grid")
         plt.show()
 
 if __name__ == "__main__":
