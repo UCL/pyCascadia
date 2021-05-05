@@ -1,7 +1,8 @@
 import pytest
 import os
-from grid import Grid
 from xarray.testing import assert_equal, assert_allclose
+
+from pycascadia.grid import Grid
 
 def test_grid_loading():
     nc_fname = './test_data/small_sample.nc'
