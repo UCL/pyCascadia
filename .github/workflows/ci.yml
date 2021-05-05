@@ -13,7 +13,8 @@ jobs:
       fail-fast: false
       matrix:
         os:
-          - ubuntu-20.04
+          - ubuntu-latest
+          - windows-latest
         python:
           - '3.9'
     steps:
@@ -25,11 +26,11 @@ jobs:
           python-version: ${{ matrix.python }}
           conda-channels: conda-forge
 
-      - name: Install pip and pygmt
+      - name: Install conda dependencies
         run: conda install pip pygmt
 
-      - name: Install pipenv environment
-        run: pip install pipenv && pipenv --python=$(conda run which python) --site-packages install
+      - name: Install package
+        run: pip install .
 
       - name: Test
-        run: pipenv run pytest
+        run: pytest
