@@ -27,6 +27,9 @@ def load_source(filepath, plot=False, convert_to_xyz=False, filter_nodata=True):
     region = extract_region(xr_data)
     spacing = extract_spacing(xr_data)
 
+    print(f"Input region: {region}")
+    print(f"Input spacing: {spacing}")
+
     return xr_data, region, spacing
 
 
