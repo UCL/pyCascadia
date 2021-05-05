@@ -87,12 +87,14 @@ def main():
     if args.plot:
         fig, axes = plt.subplots(2,2)
         base_grid.plot(ax=axes[0,0])
+        axes[0,0].set_title("Resultant Grid")
         diff_grid.plot(ax=axes[0,1])
+        axes[0,1].set_title("Last difference")
         base_grid.grid.differentiate('x').plot(ax=axes[1,0])
+        axes[1,0].set_title("x Derivative of Result")
         base_grid.grid.differentiate('y').plot(ax=axes[1,1])
+        axes[1,1].set_title("y Derivative of Result")
         plt.show()
-
-    base_grid.save_grid(args.output)
 
 if __name__ == "__main__":
     main()
