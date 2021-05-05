@@ -56,13 +56,15 @@ def main():
     parser.add_argument('--diff_threshold', default=0.0, help='value above which differences will be added to the base grid')
     parser.add_argument('--plot', action='store_true', help='plot final output before saving')
     parser.add_argument('--output', required=True, help='filename of final output')
+    parser.add_argument('--region_of_interest', required=False, nargs=4, type=int,
+                        help='output region in order <xmin> <xmax> <ymin> <ymax>')
     args = parser.parse_args()
 
     filenames = args.filenames
     base_fname = args.base
     diff_threshold = args.diff_threshold
     output_fname = args.output
-    region_of_interest = [-123.3, -122.8, 48.700, 48.900] # TODO make this a parameter
+    region_of_interest = args.region_of_interest
 
     # Create base grid
     base_grid = Grid(base_fname, convert_to_xyz=False)
