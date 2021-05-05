@@ -80,6 +80,8 @@ def main():
         print("Update base grid")
         base_grid.grid.values += diff_grid.values
 
+    base_grid.save_grid(args.output)
+
     if args.plot:
         fig, axes = plt.subplots(2,2)
         base_grid.plot(ax=axes[0,0])
