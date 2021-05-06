@@ -9,19 +9,19 @@ by running the commands below in sequence:
 ```
 git clone https://github.com/UCL/pyCascadia.git
 ```
-1. In your local copy of the GitHub repository, create a conda environment named "cascadia" with Python 3.9 and install `pip`, `matplotlib`, `pytest`, and `xarray`.
+2. In your local copy of the GitHub repository, create a conda environment (named "cascadia" here, but you might want to choose a different name) with Python 3.9 and install `pip`.
 ```
 conda create -n cascadia python=3.9 pip
 ```
-1. Additionally, install `pygmt`, `gdal` and `rasterio` into the "cascadia" environment via `conda-forge`. This step is needed because these packages are not available from the Python Package index (PyPi) (which is where `pip` looks by default) for all operating systems.
+3. Additionally, install `pygmt`, `gdal` and `rasterio` into the "cascadia" environment via `conda-forge`. This step is needed because these packages are not available from the Python Package index (PyPi) (which is where `pip` looks by default) for all operating systems.
 ```
 conda install -n cascadia pygmt gdal rasterio -c conda-forge
 ```
-1. Activate the "cascadia" environment
+4. Activate the "cascadia" environment
 ```
 conda activate cascadia
 ```
-1. Install `pyCascadia`
+5. Install `pyCascadia`
 ```
 pip install .
 ```
