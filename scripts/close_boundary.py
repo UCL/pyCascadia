@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from loaders import load_source
+from pycascadia.loaders import load_source
 import argparse
 
 def replace_land_with_zeros(arr, test_arr=None):
