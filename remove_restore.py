@@ -47,6 +47,16 @@ def calc_diff_grid(base_grid, update_grid, diff_threshold=0.0):
     return diff_grid
 
 
+def load_base_grid(fname, region=None, spacing=None):
+    base_grid = Grid(fname, convert_to_xyz=False)
+    if region:
+        base_grid.crop(region)
+    if spacing:
+        base_grid.resample(spacing)
+
+    return base_grid
+
+
 def main():
     # Handle arguments
     parser = argparse.ArgumentParser(description='Combine multiple bathymmetry sources into a single grid')
@@ -67,10 +77,7 @@ def main():
     region_of_interest = args.region_of_interest
 
     # Create base grid
-    base_grid = Grid(base_fname, convert_to_xyz=False)
-    base_grid.crop(region_of_interest)
-    if args.spacing:
-        base_grid.resample(args.spacing)
+    base_grid = load_base_grid(base_fname, region=args.region_of_interest, spacing=args.spacing)
 
     # Update base grid
     for fname in filenames:
@@ -86,8 +93,7 @@ def main():
 
     if args.plot:
         fig, axes = plt.subplots(2,2)
-        initial_base_grid = Grid(base_fname, convert_to_xyz=False)
-        initial_base_grid.crop(region_of_interest)
+        initial_base_grid = load_base_grid(base_fname, region=args.region_of_interest)
         initial_base_grid.plot(ax=axes[0,0])
         axes[0,0].set_title("Initial Grid")
         base_grid.plot(ax=axes[0,1])
