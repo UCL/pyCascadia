@@ -47,6 +47,16 @@ def calc_diff_grid(base_grid, update_grid, diff_threshold=0.0):
     return diff_grid
 
 
+def load_base_grid(fname, region=None, spacing=None):
+    base_grid = Grid(fname, convert_to_xyz=False)
+    if region:
+        base_grid.crop(region)
+    if spacing:
+        base_grid.resample(spacing)
+
+    return base_grid
+
+
 def main():
     # Handle arguments
     parser = argparse.ArgumentParser(description='Combine multiple bathymmetry sources into a single grid')
@@ -56,19 +66,18 @@ def main():
     parser.add_argument('--diff_threshold', default=0.0, help='value above which differences will be added to the base grid')
     parser.add_argument('--plot', action='store_true', help='plot final output before saving')
     parser.add_argument('--output', required=True, help='filename of final output')
+    parser.add_argument('--region_of_interest', required=False, nargs=4, type=float,
+                        help='output region in order <xmin> <xmax> <ymin> <ymax>. Defaults to the extent of the base grid.')
     args = parser.parse_args()
 
     filenames = args.filenames
     base_fname = args.base
     diff_threshold = args.diff_threshold
     output_fname = args.output
-    region_of_interest = [-123.3, -122.8, 48.700, 48.900] # TODO make this a parameter
+    region_of_interest = args.region_of_interest
 
     # Create base grid
-    base_grid = Grid(base_fname, convert_to_xyz=False)
-    base_grid.crop(region_of_interest)
-    if args.spacing:
-        base_grid.resample(args.spacing)
+    base_grid = load_base_grid(base_fname, region=args.region_of_interest, spacing=args.spacing)
 
     # Update base grid
     for fname in filenames:
@@ -80,15 +89,20 @@ def main():
         print("Update base grid")
         base_grid.grid.values += diff_grid.values
 
+    base_grid.save_grid(args.output)
+
     if args.plot:
         fig, axes = plt.subplots(2,2)
-        base_grid.plot(ax=axes[0,0])
-        diff_grid.plot(ax=axes[0,1])
+        initial_base_grid = load_base_grid(base_fname, region=args.region_of_interest)
+        initial_base_grid.plot(ax=axes[0,0])
+        axes[0,0].set_title("Initial Grid")
+        base_grid.plot(ax=axes[0,1])
+        axes[0,1].set_title("Final Grid")
         base_grid.grid.differentiate('x').plot(ax=axes[1,0])
+        axes[1,0].set_title("x Derivative of Final Grid")
         base_grid.grid.differentiate('y').plot(ax=axes[1,1])
+        axes[1,1].set_title("y Derivative of Final Grid")
         plt.show()
-
-    base_grid.save_grid(args.output)
 
 if __name__ == "__main__":
     main()
