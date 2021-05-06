@@ -6,6 +6,9 @@ Some dependencies of the package are a bit fiddly to install, especially on Wind
 We recommend to use a conda environment, and install the more difficult dependencies through `conda-forge`,
 by running the commands below in sequence:
 1. Clone this GitHub repository.
+```
+git clone https://github.com/UCL/pyCascadia.git
+```
 1. In your local copy of the GitHub repository, create a conda environment named "cascadia" with Python 3.9 and install `pip`, `matplotlib`, `pytest`, and `xarray`.
 ```
 conda create -n cascadia python=3.9 pip matplotlib pytest xarray
@@ -27,7 +30,7 @@ pip install .
 
 ### Remove restore
 
-`pyCascadia` provides an entry point for the remove restore algorithm, which means you can call it directly from the command line as `remove-restore`, e.g.
+`pyCascadia` provides the remove restore algorithm as a command line tool called `remove-restore`, e.g.
 ```
 remove-restore --base gebco_base_grid.nc higher_res_grid.tiff --output merged_grid.nc
 ```
