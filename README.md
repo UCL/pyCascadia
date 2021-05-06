@@ -13,7 +13,7 @@ git clone https://github.com/UCL/pyCascadia.git
 ```
 conda create -n cascadia python=3.9 pip
 ```
-1. Additionally, install `pygmt`, `gdal` and `rasterio` into the "cascadia" environment via `conda-forge`.
+1. Additionally, install `pygmt`, `gdal` and `rasterio` into the "cascadia" environment via `conda-forge`. This step is needed because these packages are not available from the Python Package index (PyPi) (which is where `pip` looks by default) for all operating systems.
 ```
 conda install -n cascadia pygmt gdal rasterio -c conda-forge
 ```
