@@ -36,6 +36,7 @@ Input base and source grids are accepted in both GeoTiff or NetCDF formats. For 
 remove-restore -h
 ```
 on your command line.
+For more fine-grained control of the `remove-restore` functionality, there is an example Jupyter notebook under `./notebooks/`. Note that to use this, you will need to `pip install jupyter` in the conda environment, too.
 
 ### Shape file closing
 
