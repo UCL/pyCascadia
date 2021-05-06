@@ -25,7 +25,10 @@ conda activate cascadia
 ```
 pip install .
 ```
-
+6. Check the installation worked by running the unit tests.
+```
+pytest
+```
 ## Usage
 
 ### Remove restore
