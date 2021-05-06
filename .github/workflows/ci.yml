@@ -27,7 +27,9 @@ jobs:
           conda-channels: conda-forge
 
       - name: Install conda dependencies
-        run: conda install pip pygmt
+        run: |
+          conda install pip
+          conda install -c conda-forge pygmt gdal rasterio
 
       - name: Install package
         run: pip install .
