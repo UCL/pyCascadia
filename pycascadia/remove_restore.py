@@ -11,9 +11,9 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import argparse
 
-from loaders import load_source
-from grid import Grid
-from utility import region_to_str, min_regions
+from pycascadia.loaders import load_source
+from pycascadia.grid import Grid
+from pycascadia.utility import region_to_str, min_regions
 
 def calc_diff_grid(base_grid, update_grid, diff_threshold=0.0):
     """Calculates difference grid for use in remove-restore"""
