@@ -67,7 +67,7 @@ def main():
     parser.add_argument('--plot', action='store_true', help='plot final output before saving')
     parser.add_argument('--output', required=True, help='filename of final output')
     parser.add_argument('--region_of_interest', required=False, nargs=4, type=float,
-                        help='output region in order <xmin> <xmax> <ymin> <ymax>')
+                        help='output region in order <xmin> <xmax> <ymin> <ymax>. Defaults to the extent of the base grid.')
     args = parser.parse_args()
 
     filenames = args.filenames
