@@ -9,7 +9,7 @@ by running the commands below in sequence:
 ```
 git clone https://github.com/UCL/pyCascadia.git
 ```
-2. In your local copy of the GitHub repository, create a conda environment (named "cascadia" here, but you might want to choose a different name) with Python 3.9 and install `pip`.
+2. In your local copy of the GitHub repository, create a conda environment (named "cascadia" here, but you might want to choose a different name) with Python 3.9. Other Python versions might also work, but the code is only actively tested with Python 3.9. This step also installs `pip`, which will be used to install the more straight-forward dependencies.
 ```
 conda create -n cascadia python=3.9 pip
 ```
