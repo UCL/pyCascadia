@@ -11,7 +11,7 @@ git clone https://github.com/UCL/pyCascadia.git
 ```
 1. In your local copy of the GitHub repository, create a conda environment named "cascadia" with Python 3.9 and install `pip`, `matplotlib`, `pytest`, and `xarray`.
 ```
-conda create -n cascadia python=3.9 pip matplotlib pytest xarray
+conda create -n cascadia python=3.9 pip
 ```
 1. Additionally, install `pygmt`, `gdal` and `rasterio` into the "cascadia" environment via `conda-forge`.
 ```
