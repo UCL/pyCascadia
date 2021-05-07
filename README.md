@@ -21,9 +21,9 @@ conda install -n cascadia pygmt gdal rasterio -c conda-forge
 ```
 conda activate cascadia
 ```
-5. Install `pyCascadia`. This will also automatically install the remaining dependencies `matplotlib`, `pytest`, and `xarray`.
+5. Install `pyCascadia`. This will also automatically install the remaining dependencies (a list of which can be found in [setup.cfg](https://github.com/UCL/pyCascadia/blob/main/setup.cfg)).
 ```
-pip install .
+pip install .[test]
 ```
 6. Check the installation worked by running the unit tests.
 ```
