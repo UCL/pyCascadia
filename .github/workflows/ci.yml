@@ -33,7 +33,7 @@ jobs:
           conda install -c conda-forge pygmt gdal rasterio
 
       - name: Install package
-        run: pip install .
+        run: pip install .[test]
 
       - name: Test
         run: pytest
