@@ -1,5 +1,0 @@
-pygmt
-matplotlib
-pytest
-rasterio
-xarray
