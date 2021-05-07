@@ -32,7 +32,7 @@ jobs:
           conda install -c conda-forge pygmt gdal rasterio
 
       - name: Install package
-        run: pip install .[test]
+        run: pip install .[test] flake8
 
       - name: Lint with flake8
         run: |
