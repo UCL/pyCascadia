@@ -19,7 +19,7 @@ def main():
     args = parser.parse_args()
 
     in_fname = args.input
-    input_grid = load_source(in_fname, plot=False)
+    input_grid, _, _  = load_source(in_fname, plot=False)
 
     if args.offset:
         replace_land_with_zeros(input_grid[0,:], input_grid[1,:])
