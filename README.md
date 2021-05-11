@@ -29,8 +29,16 @@ pip install .[test]
 ```
 pytest
 ```
-## Usage
+7. Once you've done your work with `pyCascadia`, you may want to deactivate the environment and return to your base python environment. You can do so by running:
+```
+conda deactivate
+```
 
+## Usage
+Before using any part of `pyCascadia`, make sure you've got its conda environment activated (change "cascadia" to the name of your environment if you've named it differently when following the installation instructions).
+```
+conda activate cascadia
+```
 ### Remove restore
 
 `pyCascadia` provides the remove restore algorithm as a command line tool called `remove-restore`, e.g.
