@@ -42,7 +42,7 @@ Input base and source grids are accepted in both GeoTiff or NetCDF formats. It i
 remove-restore --base gebco_base_grid.nc higher_res_grid1.tiff higher_res_grid2.tiff higher_res_grid3 --output merged_grid.nc
 ```
 
-For more details on input arguments of `remove-restore`, run
+For more details on these and other input arguments of `remove-restore`, run
 ```
 remove-restore -h
 ```
