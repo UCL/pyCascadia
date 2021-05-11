@@ -55,7 +55,7 @@ The scripts `close_boundary.py` and `generate_contour.sh` provide a way to close
 
 Generate a new netCDF file with any land-boundaries set to $z=0$:
 
-`pipenv run python close_boundary.py --input <input.nc> --output <output.nc>`
+`python close_boundary.py --input <input.nc> --output <output.nc>`
 
 Generate closed contours:
 
