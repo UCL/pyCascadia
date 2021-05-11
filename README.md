@@ -37,7 +37,12 @@ pytest
 ```
 remove-restore --base gebco_base_grid.nc higher_res_grid.tiff --output merged_grid.nc
 ```
-Input base and source grids are accepted in both GeoTiff or NetCDF formats. For more details on input arguments of `remove-restore`, run
+Input base and source grids are accepted in both GeoTiff or NetCDF formats. It is possible to provide more than one source grid, e.g with three source grids one would call:
+```
+remove-restore --base gebco_base_grid.nc higher_res_grid1.tiff higher_res_grid2.tiff higher_res_grid3 --output merged_grid.nc
+```
+
+For more details on input arguments of `remove-restore`, run
 ```
 remove-restore -h
 ```
