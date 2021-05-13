@@ -20,7 +20,7 @@ def calc_diff_grid(base_grid, update_grid, diff_threshold=0.0):
     print("Blockmedian update grid")
     max_spacing = max(update_grid.spacing, base_grid.spacing)
     minimal_region = min_regions(update_grid.region, base_grid.region)
-    bmd = blockmedian(update_grid.xyz, spacing=max_spacing, region=minimal_region)
+    bmd = blockmedian(update_grid.xyz, spacing=f"{max_spacing}e", region=minimal_region)
 
     print("Find z in base grid")
     base_pts = grdtrack(bmd, base_grid.grid, 'base_z', interpolation='l')
@@ -37,7 +37,7 @@ def calc_diff_grid(base_grid, update_grid, diff_threshold=0.0):
     diff_grid_fname = "diff.nc"
     diff.to_csv(diff_xyz_fname, sep=' ', header=False, index=False)
 
-    os.system(f'gmt nearneighbor {diff_xyz_fname} -G{diff_grid_fname} -R{region_to_str(base_grid.region)} -I{base_grid.spacing} -S{2*max_spacing} -N4 -E0 -V')
+    os.system(f'gmt nearneighbor {diff_xyz_fname} -G{diff_grid_fname} -R{region_to_str(base_grid.region)} -I{base_grid.spacing}e -S{2*max_spacing}e -N4 -E0 -V')
     diff_grid, _, _ = load_source(diff_grid_fname)
 
     # Cleanup files
@@ -62,7 +62,7 @@ def main():
     parser = argparse.ArgumentParser(description='Combine multiple bathymmetry sources into a single grid')
     parser.add_argument('filenames', nargs='+', help='sources to combine with the base grid')
     parser.add_argument('--base', required=True, help='base grid')
-    parser.add_argument('--spacing', type=float, help='output grid spacing')
+    parser.add_argument('--spacing', type=float, help='output grid spacing (metres)')
     parser.add_argument('--diff_threshold', default=0.0, help='value above which differences will be added to the base grid')
     parser.add_argument('--plot', action='store_true', help='plot final output before saving')
     parser.add_argument('--output', required=True, help='filename of final output')

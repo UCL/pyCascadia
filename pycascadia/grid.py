@@ -36,7 +36,7 @@ class Grid:
         in_fname = 'original.nc'
         self.save_grid(in_fname)
         out_fname = 'resampled.nc'
-        os.system(f'gmt grdsample {in_fname} -G{out_fname} -R{region_to_str(self.region)} -I{spacing} -V')
+        os.system(f'gmt grdsample {in_fname} -G{out_fname} -R{region_to_str(self.region)} -I{spacing}e -V')
         self.load(out_fname)
         os.remove(in_fname)
         os.remove(out_fname)
