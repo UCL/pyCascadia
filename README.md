@@ -59,12 +59,17 @@ For more fine-grained control of the `remove-restore` functionality, there is an
 
 ### Shape file closing
 
-The scripts `close_boundary.py` and `generate_contour.sh` provide a way to close coastline contours when land intersects the data boundary. Instructions for use:
+The scripts `close_boundary.py` and `generate_contour.sh` provide a way to close coastline contours when land intersects the data boundary. These files can be found in the `scripts/` subfolder of your local copy of this GitHub repository, so you should navigate there to use them (or replace the relative path in the commands below, e.g. `python close_boundary.py` -> `python ./scripts/close_boundary.py`).
+```
+cd scripts/
+```
+Instructions for use:
 
 Generate a new netCDF file with any land-boundaries set to $z=0$:
 
 `python close_boundary.py --input <input.nc> --output <output.nc>`
 
-Generate closed contours:
+Generate closed contours (this requires you to have [GRASS](https://grass.osgeo.org/download/) installed!):
 
 `grass78  --tmp-location --exec ./generate_contour.sh <input.nc> <output.shp>`
+
