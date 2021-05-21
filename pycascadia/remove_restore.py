@@ -51,9 +51,6 @@ def load_base_grid(fname, region=None, spacing=None):
     base_grid = Grid(fname, convert_to_xyz=False)
     if region:
         base_grid.crop(region)
-    if spacing:
-        base_grid.resample(spacing)
-
     return base_grid
 
 def preprocess_base_grid(base_grid, update_grid, final_spacing):
