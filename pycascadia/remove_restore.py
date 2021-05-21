@@ -5,7 +5,7 @@ This script should not be used in any serious way (in its current form at least)
 It's just a way for us to learn how to use pyGMT and how to read/write the sample data.
 """
 
-from pygmt import blockmedian, surface, grdtrack, grdcut, grdfilter
+from pygmt import blockmedian, surface, grdtrack, grdfilter
 import os
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -63,7 +63,7 @@ def main():
     parser.add_argument('filenames', nargs='+', help='sources to combine with the base grid')
     parser.add_argument('--base', required=True, help='base grid')
     parser.add_argument('--spacing', type=float, help='output grid spacing')
-    parser.add_argument('--diff_threshold', default=0.0, help='value above which differences will be added to the base grid')
+    parser.add_argument('--diff_threshold', type=float, default=0.0, help='value above which differences will be added to the base grid')
     parser.add_argument('--plot', action='store_true', help='plot final output before saving')
     parser.add_argument('--output', required=True, help='filename of final output')
     parser.add_argument('--region_of_interest', required=False, nargs=4, type=float,
