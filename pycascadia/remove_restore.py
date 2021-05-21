@@ -56,6 +56,24 @@ def load_base_grid(fname, region=None, spacing=None):
 
     return base_grid
 
+def preprocess_base_grid(base_grid, update_grid, final_spacing):
+    xyz1 = base_grid.as_xyz()
+    xyz2 = update_grid.as_xyz()
+    xyz1.append(xyz2, ignore_index=True)
+
+    max_spacing = max(update_grid.spacing, final_spacing)
+    minimal_region = min_regions(update_grid.region, base_grid.region)
+    bmd = blockmedian(xyz1, spacing=4*max_spacing, region=minimal_region, Q=True)
+    combined = surface(bmd.x, bmd.y, bmd.z, spacing=4*max_spacing, region=minimal_region)
+
+    filter_combined = grdfilter(combined, D=0, F=f"c{12*max_spacing}")
+    fname = "filtered.nc"
+    filter_combined.to_netcdf(fname)
+    combined_grid = Grid(fname)
+    os.remove(fname)
+    combined_grid.resample(max_spacing)
+
+    return combined_grid
 
 def main():
     # Handle arguments
