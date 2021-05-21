@@ -25,13 +25,14 @@ def calc_diff_grid(base_grid, update_grid, diff_threshold=0.0):
     print("Find z in base grid")
     base_pts = grdtrack(bmd, base_grid.grid, 'base_z', interpolation='l')
 
-    print ("Create difference grid")
+    print("Create difference grid")
     diff = pd.DataFrame()
     diff['x'] = base_pts['x']
     diff['y'] = base_pts['y']
     diff['z'] = base_pts['z'] - base_pts['base_z']
 
     diff[diff.z.abs() < diff_threshold]['z'] = 0.0 # Filter out small differences
+    diff[diff.z.isnull()] = 0.0 # Filter out NaNs.
 
     diff_xyz_fname = "diff.xyz"
     diff_grid_fname = "diff.nc"
