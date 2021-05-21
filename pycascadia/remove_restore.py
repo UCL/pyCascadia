@@ -105,23 +105,27 @@ def main():
         print("Loading update grid")
         update_grid = Grid(fname, convert_to_xyz=True)
 
-        diff_grid = calc_diff_grid(base_grid, update_grid, diff_threshold=diff_threshold)
+        print("Combining grids")
+        combined_base_grid = preprocess_base_grid(base_grid, update_grid, args.spacing)
+
+        diff_grid = calc_diff_grid(combined_base_grid, update_grid, diff_threshold=diff_threshold)
 
         print("Update base grid")
-        base_grid.grid.values += diff_grid.values
+        combined_base_grid.grid.values += diff_grid.values
 
-    base_grid.save_grid(args.output)
+    # TODO How should this work with several input?!
+    combined_base_grid.save_grid(args.output)
 
     if args.plot:
         fig, axes = plt.subplots(2,2)
         initial_base_grid = load_base_grid(base_fname, region=args.region_of_interest)
         initial_base_grid.plot(ax=axes[0,0])
         axes[0,0].set_title("Initial Grid")
-        base_grid.plot(ax=axes[0,1])
+        combined_base_grid.plot(ax=axes[0,1])
         axes[0,1].set_title("Final Grid")
-        base_grid.grid.differentiate('x').plot(ax=axes[1,0])
+        combined_base_grid.grid.differentiate('x').plot(ax=axes[1,0])
         axes[1,0].set_title("x Derivative of Final Grid")
-        base_grid.grid.differentiate('y').plot(ax=axes[1,1])
+        combined_base_grid.grid.differentiate('y').plot(ax=axes[1,1])
         axes[1,1].set_title("y Derivative of Final Grid")
         plt.show()
 
