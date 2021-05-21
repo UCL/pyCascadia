@@ -57,6 +57,11 @@ def load_base_grid(fname, region=None, spacing=None):
     return base_grid
 
 def preprocess_base_grid(base_grid, update_grid, final_spacing):
+    """
+    Combines and smooths data from the base and update grid,
+    as described in workflow steps B+C of the GEBCO cookbook.
+    This is a preprocessing step to remove-restore.
+    """
     xyz1 = base_grid.as_xyz()
     xyz2 = update_grid.as_xyz()
     xyz1.append(xyz2, ignore_index=True)
