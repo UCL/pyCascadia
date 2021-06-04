@@ -84,7 +84,7 @@ def main():
     parser.add_argument('--region_of_interest', required=False, nargs=4, type=float,
                         help='output region in order <xmin> <xmax> <ymin> <ymax>. Defaults to the extent of the base grid.')
     parser.add_argument('--window_width', required=False, type=float,
-                        help='Enable windowing of update gride and specify width of window in degrees')
+                        help='Enable windowing of update grid and specify width of window in degrees')
     args = parser.parse_args()
 
     filenames = args.filenames
