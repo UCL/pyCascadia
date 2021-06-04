@@ -15,7 +15,7 @@ from pycascadia.loaders import load_source
 from pycascadia.grid import Grid
 from pycascadia.utility import region_to_str, min_regions
 
-def calc_diff_grid(base_grid, update_grid, diff_threshold=0.0):
+def calc_diff_grid(base_grid, update_grid, diff_threshold=0.0, window_width=None):
     """Calculates difference grid for use in remove-restore"""
     print("Blockmedian update grid")
     max_spacing = max(update_grid.spacing, base_grid.spacing)
@@ -37,14 +37,33 @@ def calc_diff_grid(base_grid, update_grid, diff_threshold=0.0):
     diff_grid_fname = "diff.nc"
     diff.to_csv(diff_xyz_fname, sep=' ', header=False, index=False)
 
-    os.system(f'gmt nearneighbor {diff_xyz_fname} -G{diff_grid_fname} -R{region_to_str(base_grid.region)} -I{base_grid.spacing} -S{2*max_spacing} -N4 -E0 -V')
+    NODATA_VAL = 9999
+
+    os.system(f'gmt nearneighbor {diff_xyz_fname} -G{diff_grid_fname} -R{region_to_str(base_grid.region)} -I{base_grid.spacing} -S{2*max_spacing} -N4 -E{NODATA_VAL} -V')
     diff_grid, _, _ = load_source(diff_grid_fname)
 
     # Cleanup files
     os.remove(diff_grid_fname)
     os.remove(diff_xyz_fname)
 
-    return diff_grid
+    # Interpolate between nodata and data regions in update grid
+    if window_width:
+        # nodata_grid = xr.where(diff_grid == NODATA_VAL, 1.0, 0.0) # This doesn't work, for reference
+        # Form grid of 0.0 where there's no data and 1.0 where there's data
+        nodata_grid = diff_grid.where(diff_grid == NODATA_VAL, 1.0)
+        nodata_grid = nodata_grid.where(diff_grid != NODATA_VAL, 0.0)
+        # Use boxcar filter to smooth hard boundary between data & no data
+        interp_grid = grdfilter(nodata_grid, filter=f'b{2*window_width}', distance=0)
+        # Rescale and keep only one side of window, that on the data side
+        interp_grid = (interp_grid-0.5)*2.0
+        interp_grid = interp_grid.where(interp_grid > 0.0, 0.0)
+
+        diff_grid = diff_grid.where(diff_grid != NODATA_VAL, 0.0) # Filter out nodata
+        # Filter the original difference grid using the interpolation grid
+        return diff_grid * interp_grid
+    else:
+        diff_grid = diff_grid.where(diff_grid != NODATA_VAL, 0.0) # Filter out nodata
+        return diff_grid
 
 
 def load_base_grid(fname, region=None, spacing=None):
@@ -68,6 +87,8 @@ def main():
     parser.add_argument('--output', required=True, help='filename of final output')
     parser.add_argument('--region_of_interest', required=False, nargs=4, type=float,
                         help='output region in order <xmin> <xmax> <ymin> <ymax>. Defaults to the extent of the base grid.')
+    parser.add_argument('--window_width', required=False, type=float,
+                        help='Enable windowing of update grid and specify width of window in degrees')
     args = parser.parse_args()
 
     filenames = args.filenames
@@ -75,6 +96,7 @@ def main():
     diff_threshold = args.diff_threshold
     output_fname = args.output
     region_of_interest = args.region_of_interest
+    window_width = args.window_width
 
     # Create base grid
     base_grid = load_base_grid(base_fname, region=args.region_of_interest, spacing=args.spacing)
@@ -84,7 +106,10 @@ def main():
         print("Loading update grid")
         update_grid = Grid(fname, convert_to_xyz=True)
 
-        diff_grid = calc_diff_grid(base_grid, update_grid, diff_threshold=diff_threshold)
+        diff_grid = calc_diff_grid(base_grid, update_grid,
+                                   diff_threshold=diff_threshold,
+                                   window_width=window_width
+                                  )
 
         print("Update base grid")
         base_grid.grid.values += diff_grid.values
@@ -98,6 +123,8 @@ def main():
         axes[0,0].set_title("Initial Grid")
         base_grid.plot(ax=axes[0,1])
         axes[0,1].set_title("Final Grid")
+        # diff_grid.plot(ax=axes[0,1])
+        # axes[0,1].set_title("Difference Grid")
         base_grid.grid.differentiate('x').plot(ax=axes[1,0])
         axes[1,0].set_title("x Derivative of Final Grid")
         base_grid.grid.differentiate('y').plot(ax=axes[1,1])
