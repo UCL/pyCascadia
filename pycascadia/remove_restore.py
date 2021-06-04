@@ -98,6 +98,8 @@ def main():
         axes[0,0].set_title("Initial Grid")
         base_grid.plot(ax=axes[0,1])
         axes[0,1].set_title("Final Grid")
+        # diff_grid.plot(ax=axes[0,1])
+        # axes[0,1].set_title("Difference Grid")
         base_grid.grid.differentiate('x').plot(ax=axes[1,0])
         axes[1,0].set_title("x Derivative of Final Grid")
         base_grid.grid.differentiate('y').plot(ax=axes[1,1])
