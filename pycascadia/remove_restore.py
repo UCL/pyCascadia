@@ -49,13 +49,17 @@ def calc_diff_grid(base_grid, update_grid, diff_threshold=0.0, window_width=None
     # Interpolate between nodata and data regions in update grid
     if window_width:
         # nodata_grid = xr.where(diff_grid == NODATA_VAL, 1.0, 0.0) # This doesn't work, for reference
+        # Form grid of 0.0 where there's no data and 1.0 where there's data
         nodata_grid = diff_grid.where(diff_grid == NODATA_VAL, 1.0)
         nodata_grid = nodata_grid.where(diff_grid != NODATA_VAL, 0.0)
+        # Use boxcar filter to smooth hard boundary between data & no data
         interp_grid = grdfilter(nodata_grid, filter=f'b{2*window_width}', distance=0)
+        # Rescale and keep only one side of window, that on the data side
         interp_grid = (interp_grid-0.5)*2.0
         interp_grid = interp_grid.where(interp_grid > 0.0, 0.0)
 
         diff_grid = diff_grid.where(diff_grid != NODATA_VAL, 0.0) # Filter out nodata
+        # Filter the original difference grid using the interpolation grid
         return diff_grid * interp_grid
     else:
         diff_grid = diff_grid.where(diff_grid != NODATA_VAL, 0.0) # Filter out nodata
