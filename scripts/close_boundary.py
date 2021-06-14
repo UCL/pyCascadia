@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 from pycascadia.loaders import load_source
+from pygmt import grdcut
 import matplotlib.pyplot as plt
 import argparse
 
@@ -19,10 +20,15 @@ def main():
     parser.add_argument('--value', type=float, default=0.0, help='value to replace boundary with')
     parser.add_argument('--offset', action='store_true', default=False, help='use one index from true boundary as boundary')
     parser.add_argument('--plot', action='store_true', default=False, help='plot final grid before saving')
+    parser.add_argument('--region', required=False, metavar=('xmin', 'xmax', 'ymin', 'ymax'), nargs=4, type=float,
+                        help='output region. Defaults to the extent of the input grid.')
     args = parser.parse_args()
 
     in_fname = args.input
     input_grid, _, _  = load_source(in_fname, plot=False)
+
+    if args.region:
+        input_grid = grdcut(input_grid, region=args.region)
 
     if args.offset:
         replace_land_with_zeros(input_grid[0,:], input_grid[1,:], value=args.value)
