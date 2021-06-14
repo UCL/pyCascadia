@@ -85,10 +85,10 @@ def main():
     parser.add_argument('--diff_threshold', default=0.0, help='value above which differences will be added to the base grid')
     parser.add_argument('--plot', action='store_true', help='plot final output before saving')
     parser.add_argument('--output', required=True, help='filename of final output')
-    parser.add_argument('--region_of_interest', required=False, nargs=4, type=float,
-                        help='output region in order <xmin> <xmax> <ymin> <ymax>. Defaults to the extent of the base grid.')
     parser.add_argument('--window_width', required=False, type=float,
                         help='Enable windowing of update grid and specify width of window in degrees')
+    parser.add_argument('--region_of_interest', metavar=('xmin', 'xmax', 'ymin', 'ymax'), required=False, nargs=4, type=float,
+                        help='output region. Defaults to the extent of the base grid.')
     args = parser.parse_args()
 
     filenames = args.filenames
