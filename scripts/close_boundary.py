@@ -4,11 +4,11 @@ from pycascadia.loaders import load_source
 import matplotlib.pyplot as plt
 import argparse
 
-def replace_land_with_zeros(arr, test_arr=None):
+def replace_land_with_zeros(arr, test_arr=None, value=0.0):
     if test_arr is None:
         test_arr = arr
 
-    arr[test_arr>0] = 0
+    arr[test_arr>value] = value
 
 
 def main():
@@ -16,6 +16,7 @@ def main():
     parser = argparse.ArgumentParser(description='Add halo surrounding given netcdf file')
     parser.add_argument('--input', required=True, help='input file')
     parser.add_argument('--output', required=True, help='output file')
+    parser.add_argument('--value', type=float, default=0.0, help='value to replace boundary with')
     parser.add_argument('--offset', action='store_true', default=False, help='use one index from true boundary as boundary')
     parser.add_argument('--plot', action='store_true', default=False, help='plot final grid before saving')
     args = parser.parse_args()
@@ -24,20 +25,20 @@ def main():
     input_grid, _, _  = load_source(in_fname, plot=False)
 
     if args.offset:
-        replace_land_with_zeros(input_grid[0,:], input_grid[1,:])
-        replace_land_with_zeros(input_grid[-1,:], input_grid[-2,:])
-        replace_land_with_zeros(input_grid[:,0], input_grid[:,1])
-        replace_land_with_zeros(input_grid[:,-1], input_grid[:,-2])
+        replace_land_with_zeros(input_grid[0,:], input_grid[1,:], value=args.value)
+        replace_land_with_zeros(input_grid[-1,:], input_grid[-2,:], value=args.value)
+        replace_land_with_zeros(input_grid[:,0], input_grid[:,1], value=args.value)
+        replace_land_with_zeros(input_grid[:,-1], input_grid[:,-2], value=args.value)
     else:
-        replace_land_with_zeros(input_grid[0,:])
-        replace_land_with_zeros(input_grid[-1,:])
-        replace_land_with_zeros(input_grid[:,0])
-        replace_land_with_zeros(input_grid[:,-1])
+        replace_land_with_zeros(input_grid[0,:], value=args.value)
+        replace_land_with_zeros(input_grid[-1,:], value=args.value)
+        replace_land_with_zeros(input_grid[:,0], value=args.value)
+        replace_land_with_zeros(input_grid[:,-1], value=args.value)
 
     if args.plot:
         # Plot bath & contour on top
         input_grid.plot()
-        plt.contour(input_grid.x, input_grid.y, input_grid.values, levels=[0.0])
+        plt.contour(input_grid.x, input_grid.y, input_grid.values, levels=[args.value])
 
         # Increase view of region to display closed contours
         BORDER_SCALE = 0.1
