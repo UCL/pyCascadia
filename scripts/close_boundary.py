@@ -5,7 +5,7 @@ from pygmt import grdcut
 import matplotlib.pyplot as plt
 import argparse
 
-def replace_land_with_zeros(arr, test_arr=None, value=0.0):
+def clip_to_value(arr, test_arr=None, value=0.0):
     if test_arr is None:
         test_arr = arr
 
