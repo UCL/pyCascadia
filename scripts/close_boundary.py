@@ -31,15 +31,15 @@ def main():
         input_grid = grdcut(input_grid, region=args.region)
 
     if args.offset:
-        replace_land_with_zeros(input_grid[0,:], input_grid[1,:], value=args.value)
-        replace_land_with_zeros(input_grid[-1,:], input_grid[-2,:], value=args.value)
-        replace_land_with_zeros(input_grid[:,0], input_grid[:,1], value=args.value)
-        replace_land_with_zeros(input_grid[:,-1], input_grid[:,-2], value=args.value)
+        clip_to_value(input_grid[0,:], input_grid[1,:], value=args.value)
+        clip_to_value(input_grid[-1,:], input_grid[-2,:], value=args.value)
+        clip_to_value(input_grid[:,0], input_grid[:,1], value=args.value)
+        clip_to_value(input_grid[:,-1], input_grid[:,-2], value=args.value)
     else:
-        replace_land_with_zeros(input_grid[0,:], value=args.value)
-        replace_land_with_zeros(input_grid[-1,:], value=args.value)
-        replace_land_with_zeros(input_grid[:,0], value=args.value)
-        replace_land_with_zeros(input_grid[:,-1], value=args.value)
+        clip_to_value(input_grid[0,:], value=args.value)
+        clip_to_value(input_grid[-1,:], value=args.value)
+        clip_to_value(input_grid[:,0], value=args.value)
+        clip_to_value(input_grid[:,-1], value=args.value)
 
     if args.plot:
         # Plot bath & contour on top
