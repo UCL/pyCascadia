@@ -44,7 +44,7 @@ def main():
     if args.plot:
         # Plot bath & contour on top
         input_grid.plot()
-        plt.contour(input_grid.x, input_grid.y, input_grid.values, levels=[args.value])
+        plt.contour(input_grid.x, input_grid.y, input_grid.values, levels=[args.value], colors=['green'])
 
         # Increase view of region to display closed contours
         BORDER_SCALE = 0.1
