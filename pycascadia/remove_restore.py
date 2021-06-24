@@ -22,7 +22,7 @@ def calc_diff_grid(base_grid, update_grid, diff_threshold=0.0, window_width=None
     max_spacing = max(update_grid.spacing, base_grid.spacing)
     minimal_region = min_regions(update_grid.region, base_grid.region)
     if not is_region_valid(minimal_region):
-        print("Update grid is outside region of interest. Skipping.")
+        print("Update grid is entirely outside region of interest. Skipping.")
         return None
 
     bmd = blockmedian(update_grid.xyz, spacing=max_spacing, region=minimal_region)
