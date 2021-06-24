@@ -2,6 +2,8 @@
 
 """
 Implementation of the remove-restore algorithm from the GEBCO cookbook
+
+Note that the remove-restore algorithm consists of only "step D" described in the cookbook. Preprocessing steps A-C are not included here.
 """
 
 from pygmt import blockmedian, surface, grdtrack, grdcut, grdfilter
