@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 
 """
-This script should not be used in any serious way (in its current form at least)!
-It's just a way for us to learn how to use pyGMT and how to read/write the sample data.
+Implementation of the remove-restore algorithm from the GEBCO cookbook
+
+Note that the remove-restore algorithm consists of only "step D" described in the cookbook. Preprocessing steps A-C are not included here.
 """
 
 from pygmt import blockmedian, surface, grdtrack, grdcut, grdfilter
@@ -13,13 +14,17 @@ import argparse
 
 from pycascadia.loaders import load_source
 from pycascadia.grid import Grid
-from pycascadia.utility import region_to_str, min_regions
+from pycascadia.utility import region_to_str, min_regions, is_region_valid
 
 def calc_diff_grid(base_grid, update_grid, diff_threshold=0.0, window_width=None):
     """Calculates difference grid for use in remove-restore"""
     print("Blockmedian update grid")
     max_spacing = max(update_grid.spacing, base_grid.spacing)
     minimal_region = min_regions(update_grid.region, base_grid.region)
+    if not is_region_valid(minimal_region):
+        print("Update grid is entirely outside region of interest. Skipping.")
+        return None
+
     bmd = blockmedian(update_grid.xyz, spacing=max_spacing, region=minimal_region)
 
     print("Find z in base grid")
@@ -111,8 +116,9 @@ def main():
                                    window_width=window_width
                                   )
 
-        print("Update base grid")
-        base_grid.grid.values += diff_grid.values
+        if diff_grid is not None:
+            print("Update base grid")
+            base_grid.grid.values += diff_grid.values
 
     base_grid.save_grid(args.output)
 
