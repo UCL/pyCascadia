@@ -1,6 +1,3 @@
-"""
-Grid class representing a grid of data either in xarray format or in pandas dataframe format
-"""
 
 import os
 import pandas
@@ -10,6 +7,17 @@ from pycascadia.loaders import load_source, extract_region
 from pycascadia.utility import region_to_str, xr_to_xyz, filter_nodata
 
 class Grid:
+    """Grid contains a grid of data in xarray format and optionally as xyz points in pandas dataframe format.
+
+    Grids are intended to be initially loaded from file and can be further manipulated in the following ways:
+
+        - resampling to a different grid spacing
+        - cropping to a given region
+        - conversion to a list of xyz datapoints.
+        - saved to file
+
+    The internal grid may also be manipulater and is exposed through Grid.grid or Grid.xyz (if the grid has already been converted).
+    """
     def __init__(self, fname: str, convert_to_xyz:bool=False) -> None:
         """
         Constructor
