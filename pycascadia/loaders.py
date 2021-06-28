@@ -1,15 +1,24 @@
+"""
+Helper functions for loading different types of data sources as xarray grids
+"""
+
 import xarray as xr
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
-"""
-Helper functions for loading different types of data sources
-"""
 
-def load_source(filepath, plot=False, filter_nodata=True):
-    """
-    Loads an xarray dataarray from file
+def load_source(filepath: str, plot: bool = False) -> xr.DataArray, list, float:
+    """Loads an xarray dataarray from file
+
+    Args:
+        filepath: name of file to load
+        plot: whether to plot loaded grid
+
+    Returns:
+        - grid as xarray DataArray
+        - bounding region of grid
+        - grid spacing
     """
     print(f"Loading {filepath}")
     ext = filepath.split('.')[-1]
@@ -35,9 +44,14 @@ def load_source(filepath, plot=False, filter_nodata=True):
     return xr_data, region, spacing
 
 
-def extract_region(xr_data):
-    """
-    Extracts the bounding box from an xarray dataarray
+def extract_region(xr_data: xr.DataArray) -> list:
+    """Extracts the bounding box from an xarray dataarray
+
+    Args:
+        xr_data: array containing grid
+
+    Returns:
+        Bounding region of grid
     """
     left = float(xr_data.x.min())
     right = float(xr_data.x.max())
@@ -47,15 +61,29 @@ def extract_region(xr_data):
     return [left, right, bottom, top]
 
 
-def extract_spacing(xr_data):
-    """
-    Extracts spacing from xarray dataarray (assumes same in both directions)
+def extract_spacing(xr_data: xr.DataArray) -> float:
+    """Extracts spacing from xarray dataarray.
+
+    This assumes the grid spacing is identical in both x & y directions.
+
+    Args:
+        xr_data: array containing grid
+
+    Returns:
+        grid spacing
     """
     return abs(float(xr_data.x[1] - xr_data.x[0]))
 
 
-def load_netcdf(filepath):
-    """Loads netcdf file"""
+def load_netcdf(filepath: str) -> xr.DataArray:
+    """Loads netcdf file
+
+    Args:
+        filepath: file to load
+
+    Returns:
+        grid as xarray array
+    """
     xr_data = xr.open_dataarray(filepath)
     xr_data = xr_data.rename('z')
     if 'lon' in xr_data.dims:
@@ -67,10 +95,17 @@ def load_netcdf(filepath):
     return xr_data
 
 
-def load_geotiff(filepath):
-    """Loads geotiff file"""
+def load_geotiff(filepath: str) -> xr.DataArray:
+    """Loads geotiff file
+
+    Args:
+        filepath: file to load
+
+    Returns:
+        grid as xarray array
+    """
     xr_data = xr.open_rasterio(filepath, parse_coordinates=True)
-    xr_data = xr_data.squeeze('band') # Remove band if present
+    xr_data = xr_data.squeeze('band')  # Remove band if present
     del xr_data['band']
     xr_data = xr_data.rename('z')
 
