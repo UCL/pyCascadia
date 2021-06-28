@@ -56,8 +56,43 @@ def nearneighbour(data_xyz, **kwargs):
 
     return result
 
-def calc_diff_grid(base_grid, update_grid, diff_threshold=0.0, window_width=None):
-    """Calculates difference grid for use in remove-restore"""
+def create_interpolation_grid(diff_grid: xr.DataArray, nodata_val: int, window_width: int) -> xr.DataArray:
+    """Create filter to smooth hard edge of difference grid
+
+    This works by creating a grid containing 1 where there is data in the input grid and a 0 where there is none, then applying a filter to this grid to smooth the boundary. This can be directly multiplied by the difference grid to smooth its edges.
+
+    Args:
+        diff_grid: difference grid to calculate smoothing filter from
+        nodata_val: value in grid representing a lack of data
+        window_width: width of smoothing region at data boundary
+
+    Returns:
+        grid which should be multiplied by input grid in order to smooth
+    """
+    # nodata_grid = xr.where(diff_grid == nodata_val, 1.0, 0.0) # This doesn't work, for reference
+    # Form grid of 0.0 where there's no data and 1.0 where there's data
+    nodata_grid = diff_grid.where(diff_grid == nodata_val, 1.0)
+    nodata_grid = nodata_grid.where(diff_grid != nodata_val, 0.0)
+    # Use boxcar filter to smooth hard boundary between data & no data
+    interp_grid = grdfilter(nodata_grid, filter=f'b{2*window_width}', distance=0)
+    # Rescale and keep only one side of window, that on the data side
+    interp_grid = (interp_grid-0.5)*2.0
+    interp_grid = interp_grid.where(interp_grid > 0.0, 0.0)
+
+    return interp_grid
+
+def calc_diff_grid(base_grid: Grid, update_grid: Grid, diff_threshold:float=0.0, window_width:int=None) -> xr.DataArray:
+    """Calculates difference grid for use in remove-restore
+
+    Args:
+        base_grid: base grid to be later updated using the calculated difference grid
+        update_grid: Differences will be calculated between this and the base grid
+        diff_threshold: Optional threshold above which a difference will be applied
+        window_width: Width of optional smoothing window around update grid
+
+    Returns:
+        Difference grid for updating base grid
+    """
     print("Blockmedian update grid")
     max_spacing = max(update_grid.spacing, base_grid.spacing)
     minimal_region = min_regions(update_grid.region, base_grid.region)
@@ -88,25 +123,28 @@ def calc_diff_grid(base_grid, update_grid, diff_threshold=0.0, window_width=None
 
     # Interpolate between nodata and data regions in update grid
     if window_width:
-        # nodata_grid = xr.where(diff_grid == NODATA_VAL, 1.0, 0.0) # This doesn't work, for reference
-        # Form grid of 0.0 where there's no data and 1.0 where there's data
-        nodata_grid = diff_grid.where(diff_grid == NODATA_VAL, 1.0)
-        nodata_grid = nodata_grid.where(diff_grid != NODATA_VAL, 0.0)
-        # Use boxcar filter to smooth hard boundary between data & no data
-        interp_grid = grdfilter(nodata_grid, filter=f'b{2*window_width}', distance=0)
-        # Rescale and keep only one side of window, that on the data side
-        interp_grid = (interp_grid-0.5)*2.0
-        interp_grid = interp_grid.where(interp_grid > 0.0, 0.0)
+        interp_grid = create_interpolation_grid(diff_grid, NODATA_VAL, window_width)
 
         diff_grid = diff_grid.where(diff_grid != NODATA_VAL, 0.0) # Filter out nodata
         # Filter the original difference grid using the interpolation grid
-        return diff_grid * interp_grid
+        diff_grid = diff_grid * interp_grid
     else:
         diff_grid = diff_grid.where(diff_grid != NODATA_VAL, 0.0) # Filter out nodata
-        return diff_grid
+
+    return diff_grid
 
 
-def load_base_grid(fname, region=None, spacing=None):
+def load_base_grid(fname:str, region:list=None, spacing:bool=None) -> Grid:
+    """Load base grid from file optionally cropping and resampling
+
+    Args:
+        fname: filename of input grid
+        region: Optional region to crop to
+        spacing: Optional grid spacing to which the base grid will be resampled
+
+    Returns:
+        Grid containing base grid
+    """
     base_grid = Grid(fname, convert_to_xyz=False)
     if region:
         base_grid.crop(region)
@@ -117,6 +155,10 @@ def load_base_grid(fname, region=None, spacing=None):
 
 
 def main():
+    """Main entry point for remove-restore command line tool
+
+    This handles arguments, applies the remove-restore algorithm then, optionally, plots the results.
+    """
     # Handle arguments
     parser = argparse.ArgumentParser(description='Combine multiple bathymmetry sources into a single grid')
     parser.add_argument('filenames', nargs='*', help='sources to combine with the base grid')
