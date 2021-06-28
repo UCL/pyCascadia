@@ -4,12 +4,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 """
-Helper functions for loading different types of data sources as xyz dataframes
+Helper functions for loading different types of data sources
 """
 
-def load_source(filepath, plot=False, convert_to_xyz=False, filter_nodata=True):
+def load_source(filepath, plot=False, filter_nodata=True):
     """
-    Loads an xarray dataarray from file, optionally converting it to an xyz dataframe
+    Loads an xarray dataarray from file
     """
     print(f"Loading {filepath}")
     ext = filepath.split('.')[-1]
@@ -46,26 +46,13 @@ def extract_region(xr_data):
 
     return [left, right, bottom, top]
 
+
 def extract_spacing(xr_data):
     """
     Extracts spacing from xarray dataarray (assumes same in both directions)
     """
     return abs(float(xr_data.x[1] - xr_data.x[0]))
 
-def xr_to_xyz(xr_data):
-    """
-    Converts an xarray dataarray into a pandas dataframe.
-    This requires the input coordinates to be named (x,y) and the elevation to be named z
-    """
-    xyz_data = xr_data.to_dataframe()
-    xyz_data = xyz_data.reset_index()
-    xyz_data = xyz_data[['x', 'y', 'z']]
-    return xyz_data
-
-def filter_nodata(xyz_data, nodatavals):
-    """Removes values in nodatavals from input"""
-    for nodata_val in nodatavals:
-        xyz_data.where(xyz_data['z'] != nodata_val, inplace=True)
 
 def load_netcdf(filepath):
     """Loads netcdf file"""

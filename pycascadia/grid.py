@@ -5,8 +5,8 @@ Grid class representing a grid of data either in xarray format or in pandas data
 import os
 from pygmt import grdcut
 
-from pycascadia.loaders import load_source, xr_to_xyz, filter_nodata, extract_region
-from pycascadia.utility import region_to_str
+from pycascadia.loaders import load_source, extract_region
+from pycascadia.utility import region_to_str, xr_to_xyz, filter_nodata
 
 class Grid:
     def __init__(self, fname, convert_to_xyz=False):
