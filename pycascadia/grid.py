@@ -1,10 +1,10 @@
-
 import os
 import pandas
 from pygmt import grdcut
 
 from pycascadia.loaders import load_source, extract_region
 from pycascadia.utility import region_to_str, xr_to_xyz, filter_nodata
+
 
 class Grid:
     """Grid contains a grid of data in xarray format and optionally as xyz points in pandas dataframe format.
@@ -18,7 +18,8 @@ class Grid:
 
     The internal grid may also be manipulater and is exposed through Grid.grid or Grid.xyz (if the grid has already been converted).
     """
-    def __init__(self, fname: str, convert_to_xyz:bool=False) -> None:
+
+    def __init__(self, fname: str, convert_to_xyz: bool = False) -> None:
         """
         Constructor
 
@@ -66,11 +67,13 @@ class Grid:
         if spacing == self.spacing:
             return
 
-        print(f'Resampling from {self.spacing} to {spacing}')
-        in_fname = 'original.nc'
+        print(f"Resampling from {self.spacing} to {spacing}")
+        in_fname = "original.nc"
         self.save_grid(in_fname)
-        out_fname = 'resampled.nc'
-        os.system(f'gmt grdsample {in_fname} -G{out_fname} -R{region_to_str(self.region)} -I{spacing} -V')
+        out_fname = "resampled.nc"
+        os.system(
+            f"gmt grdsample {in_fname} -G{out_fname} -R{region_to_str(self.region)} -I{spacing} -V"
+        )
         self.load(out_fname)
         os.remove(in_fname)
         os.remove(out_fname)
@@ -80,7 +83,7 @@ class Grid:
         Returns pandas dataframe representation
         """
         xyz_data = xr_to_xyz(self.grid)
-        if hasattr(self.grid, 'nodatavals'):
+        if hasattr(self.grid, "nodatavals"):
             filter_nodata(xyz_data, self.grid.nodatavals)
         return xyz_data
 

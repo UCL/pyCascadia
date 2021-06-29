@@ -15,7 +15,7 @@ def region_to_str(region: list) -> str:
     Returns:
         region in string format suitable for GMT
     """
-    return '/'.join(map(str, region))
+    return "/".join(map(str, region))
 
 
 def min_regions(region1: list, region2: list) -> list:
@@ -79,7 +79,7 @@ def xr_to_xyz(xr_data: xr.DataArray) -> pandas.DataFrame:
     """
     xyz_data = xr_data.to_dataframe()
     xyz_data = xyz_data.reset_index()
-    xyz_data = xyz_data[['x', 'y', 'z']]
+    xyz_data = xyz_data[["x", "y", "z"]]
     return xyz_data
 
 
@@ -91,6 +91,7 @@ def filter_nodata(xyz_data: pandas.DataFrame, nodatavals: list) -> None:
         nodatavals: list of values to remove from xyz_data
     """
     for nodata_val in nodatavals:
+<<<<<<< HEAD
         xyz_data.where(xyz_data['z'] != nodata_val, inplace=True)
 
 
@@ -102,3 +103,6 @@ def delete_variable(ds, varname):
         del ds[varname]
     else:
         raise ValueError(f"Could not find {varname} in dataset")
+=======
+        xyz_data.where(xyz_data["z"] != nodata_val, inplace=True)
+>>>>>>> 695a79a (Fixed tests which broke due to new type annotations, formatted with black and checked with flake8)

@@ -3,12 +3,11 @@ Helper functions for loading different types of data sources as xarray grids
 """
 
 import xarray as xr
-import pandas as pd
-import numpy as np
+from typing import Tuple
 import matplotlib.pyplot as plt
 
 
-def load_source(filepath: str, plot: bool = False) -> xr.DataArray, list, float:
+def load_source(filepath: str, plot: bool = False) -> Tuple[xr.DataArray, list, float]:
     """Loads an xarray dataarray from file
 
     Args:
@@ -21,10 +20,10 @@ def load_source(filepath: str, plot: bool = False) -> xr.DataArray, list, float:
         - grid spacing
     """
     print(f"Loading {filepath}")
-    ext = filepath.split('.')[-1]
-    if ext == 'nc':
+    ext = filepath.split(".")[-1]
+    if ext == "nc":
         xr_data = load_netcdf(filepath)
-    elif ext == 'tif' or ext == 'tiff':
+    elif ext == "tif" or ext == "tiff":
         xr_data = load_geotiff(filepath)
     else:
         raise RuntimeError(f"Error: filetype {ext} not recognised.")
@@ -88,7 +87,7 @@ def load_netcdf(filepath: str) -> xr.DataArray:
     xr_data = xr_data.rename('z')
     if 'lon' in xr_data.dims:
         # assume lat is also a dimension
-        xr_data = xr_data.rename({'lon': 'x', 'lat': 'y'})
+        xr_data = xr_data.rename({"lon": "x", "lat": "y"})
 
     print(f"Resolution: {xr_data.values.shape}")
 
@@ -105,13 +104,13 @@ def load_geotiff(filepath: str) -> xr.DataArray:
         grid as xarray array
     """
     xr_data = xr.open_rasterio(filepath, parse_coordinates=True)
-    xr_data = xr_data.squeeze('band')  # Remove band if present
-    del xr_data['band']
-    xr_data = xr_data.rename('z')
+    xr_data = xr_data.squeeze("band")  # Remove band if present
+    del xr_data["band"]
+    xr_data = xr_data.rename("z")
 
     print(f"Resolution: ({xr_data.sizes['x']}, {xr_data.sizes['y']})")
     print(f"CRS: {xr_data.crs}")
 
-    xr_data = xr_data.sortby('y')
+    xr_data = xr_data.sortby("y")
 
     return xr_data

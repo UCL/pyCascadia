@@ -3,28 +3,28 @@
 """
 Implementation of the remove-restore algorithm from the GEBCO cookbook
 
-Note that the remove-restore algorithm consists of only "step D" described in the cookbook. Preprocessing steps A-C are not included here.
+Note that the remove-restore algorithm consists of only "step D" described in
+the cookbook. Preprocessing steps A-C are not included here.
 """
 
-from pygmt import blockmedian, surface, grdtrack, grdcut, grdfilter
+from pygmt import blockmedian, grdtrack, grdfilter
 from pygmt.clib import Session
 from pygmt.helpers import (
     GMTTempFile,
     build_arg_string,
-    fmt_docstring,
     kwargs_to_strings,
     use_alias,
 )
-import xarray as xr
 
-import os
+import xarray as xr
 import pandas as pd
 import matplotlib.pyplot as plt
 import argparse
 
-from pycascadia.loaders import load_source
 from pycascadia.grid import Grid
-from pycascadia.utility import region_to_str, min_regions, is_region_valid, read_fnames, all_values_are_nodata
+from pycascadia.utility import min_regions, is_region_valid, \
+        read_fnames, all_values_are_nodata
+
 
 @use_alias(
     I="spacing",
@@ -56,10 +56,16 @@ def nearneighbour(data_xyz, **kwargs):
 
     return result
 
-def create_interpolation_grid(diff_grid: xr.DataArray, nodata_val: int, window_width: int) -> xr.DataArray:
+
+def create_interpolation_grid(
+    diff_grid: xr.DataArray, nodata_val: int, window_width: int
+) -> xr.DataArray:
     """Create filter to smooth hard edge of difference grid
 
-    This works by creating a grid containing 1 where there is data in the input grid and a 0 where there is none, then applying a filter to this grid to smooth the boundary. This can be directly multiplied by the difference grid to smooth its edges.
+    This works by creating a grid containing 1 where there is data in the input
+    grid and a 0 where there is none, then applying a filter to this grid to
+    smooth the boundary. This can be directly multiplied by the difference grid
+    to smooth its edges.
 
     Args:
         diff_grid: difference grid to calculate smoothing filter from
@@ -70,18 +76,25 @@ def create_interpolation_grid(diff_grid: xr.DataArray, nodata_val: int, window_w
         grid which should be multiplied by input grid in order to smooth
     """
     # nodata_grid = xr.where(diff_grid == nodata_val, 1.0, 0.0) # This doesn't work, for reference
+
     # Form grid of 0.0 where there's no data and 1.0 where there's data
     nodata_grid = diff_grid.where(diff_grid == nodata_val, 1.0)
     nodata_grid = nodata_grid.where(diff_grid != nodata_val, 0.0)
     # Use boxcar filter to smooth hard boundary between data & no data
-    interp_grid = grdfilter(nodata_grid, filter=f'b{2*window_width}', distance=0)
+    interp_grid = grdfilter(nodata_grid, filter=f"b{2*window_width}", distance=0)
     # Rescale and keep only one side of window, that on the data side
-    interp_grid = (interp_grid-0.5)*2.0
+    interp_grid = (interp_grid - 0.5) * 2.0
     interp_grid = interp_grid.where(interp_grid > 0.0, 0.0)
 
     return interp_grid
 
-def calc_diff_grid(base_grid: Grid, update_grid: Grid, diff_threshold:float=0.0, window_width:int=None) -> xr.DataArray:
+
+def calc_diff_grid(
+    base_grid: Grid,
+    update_grid: Grid,
+    diff_threshold: float = 0.0,
+    window_width: int = None,
+) -> xr.DataArray:
     """Calculates difference grid for use in remove-restore
 
     Args:
@@ -103,38 +116,47 @@ def calc_diff_grid(base_grid: Grid, update_grid: Grid, diff_threshold:float=0.0,
     if all_values_are_nodata(update_grid.grid):
         print("Update grid consists entirely of no_data_values. Skipping.")
         return None
-  
-    bmd = blockmedian(update_grid.xyz, spacing=max_spacing, region=minimal_region)
+
+    bmd = blockmedian(update_grid.xyz,
+                      spacing=max_spacing,
+                      region=minimal_region)
 
     print("Find z in base grid")
-    base_pts = grdtrack(bmd, base_grid.grid, 'base_z', interpolation='l')
+    base_pts = grdtrack(bmd, base_grid.grid, "base_z", interpolation="l")
 
-    print ("Create difference grid")
+    print("Create difference grid")
     diff = pd.DataFrame()
-    diff['x'] = base_pts['x']
-    diff['y'] = base_pts['y']
-    diff['z'] = base_pts['z'] - base_pts['base_z']
+    diff["x"] = base_pts["x"]
+    diff["y"] = base_pts["y"]
+    diff["z"] = base_pts["z"] - base_pts["base_z"]
 
-    diff[diff.z.abs() < diff_threshold]['z'] = 0.0 # Filter out small differences
+    diff[diff.z.abs() < diff_threshold]["z"] = 0.0  # Filter out small differences
 
     NODATA_VAL = 9999
 
-    diff_grid = nearneighbour(diff, region=base_grid.region, spacing=base_grid.spacing, S=2*max_spacing, N=4, E=NODATA_VAL, verbose=True)
+    diff_grid = nearneighbour(diff,
+                              region=base_grid.region,
+                              spacing=base_grid.spacing,
+                              S=2*max_spacing, N=4, E=NODATA_VAL,
+                              verbose=True)
 
     # Interpolate between nodata and data regions in update grid
     if window_width:
-        interp_grid = create_interpolation_grid(diff_grid, NODATA_VAL, window_width)
+        interp_grid = create_interpolation_grid(
+            diff_grid, NODATA_VAL, window_width)
 
-        diff_grid = diff_grid.where(diff_grid != NODATA_VAL, 0.0) # Filter out nodata
+        # Filter out nodata
+        diff_grid = diff_grid.where(diff_grid != NODATA_VAL, 0.0)
         # Filter the original difference grid using the interpolation grid
         diff_grid = diff_grid * interp_grid
     else:
-        diff_grid = diff_grid.where(diff_grid != NODATA_VAL, 0.0) # Filter out nodata
+        # Filter out nodata
+        diff_grid = diff_grid.where(diff_grid != NODATA_VAL, 0.0)
 
     return diff_grid
 
 
-def load_base_grid(fname:str, region:list=None, spacing:bool=None) -> Grid:
+def load_base_grid(fname: str, region: list = None, spacing: bool = None) -> Grid:
     """Load base grid from file optionally cropping and resampling
 
     Args:
@@ -190,38 +212,43 @@ def main():
     window_width = args.window_width
 
     # Create base grid
-    base_grid = load_base_grid(base_fname, region=args.region_of_interest, spacing=args.spacing)
+    base_grid = load_base_grid(
+        base_fname, region=region_of_interest, spacing=args.spacing
+    )
 
     # Update base grid
     for fname in filenames:
         print("Loading update grid")
         update_grid = Grid(fname, convert_to_xyz=True)
 
-        diff_grid = calc_diff_grid(base_grid, update_grid,
-                                   diff_threshold=diff_threshold,
-                                   window_width=window_width
-                                  )
+        diff_grid = calc_diff_grid(
+            base_grid,
+            update_grid,
+            diff_threshold=diff_threshold,
+            window_width=window_width,
+        )
 
         if diff_grid is not None:
             print("Update base grid")
             base_grid.grid.values += diff_grid.values
 
-    base_grid.save_grid(args.output)
+    base_grid.save_grid(output_fname)
 
     if args.plot:
-        fig, axes = plt.subplots(2,2)
-        initial_base_grid = load_base_grid(base_fname, region=args.region_of_interest)
-        initial_base_grid.plot(ax=axes[0,0])
-        axes[0,0].set_title("Initial Grid")
-        base_grid.plot(ax=axes[0,1])
-        axes[0,1].set_title("Final Grid")
+        fig, axes = plt.subplots(2, 2)
+        initial_base_grid = load_base_grid(base_fname, region=region_of_interest)
+        initial_base_grid.plot(ax=axes[0, 0])
+        axes[0, 0].set_title("Initial Grid")
+        base_grid.plot(ax=axes[0, 1])
+        axes[0, 1].set_title("Final Grid")
         # diff_grid.plot(ax=axes[0,1])
         # axes[0,1].set_title("Difference Grid")
-        base_grid.grid.differentiate('x').plot(ax=axes[1,0])
-        axes[1,0].set_title("x Derivative of Final Grid")
-        base_grid.grid.differentiate('y').plot(ax=axes[1,1])
-        axes[1,1].set_title("y Derivative of Final Grid")
+        base_grid.grid.differentiate("x").plot(ax=axes[1, 0])
+        axes[1, 0].set_title("x Derivative of Final Grid")
+        base_grid.grid.differentiate("y").plot(ax=axes[1, 1])
+        axes[1, 1].set_title("y Derivative of Final Grid")
         plt.show()
+
 
 if __name__ == "__main__":
     main()

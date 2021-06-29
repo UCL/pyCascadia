@@ -3,6 +3,7 @@ import pytest
 import xarray as xr
 from pycascadia.utility import is_region_valid, all_values_are_nodata, read_fnames, delete_variable
 
+
 def test_is_region_valid():
     # Maximum > minimum in each direction
     valid_region = [100, 200, 300, 400]
