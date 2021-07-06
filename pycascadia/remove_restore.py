@@ -14,7 +14,7 @@ import argparse
 
 from pycascadia.loaders import load_source
 from pycascadia.grid import Grid
-from pycascadia.utility import region_to_str, min_regions, is_region_valid
+from pycascadia.utility import region_to_str, min_regions, is_region_valid, read_fnames
 
 def calc_diff_grid(base_grid, update_grid, diff_threshold=0.0, window_width=None):
     """Calculates difference grid for use in remove-restore"""
@@ -86,6 +86,7 @@ def main():
     parser = argparse.ArgumentParser(description='Combine multiple bathymmetry sources into a single grid')
     parser.add_argument('filenames', nargs='+', help='sources to combine with the base grid')
     parser.add_argument('--base', required=True, help='base grid')
+    parser.add_argument('--input_txt', help='text file containing list of input grids')
     parser.add_argument('--spacing', type=float, help='output grid spacing')
     parser.add_argument('--diff_threshold', default=0.0, help='value above which differences will be added to the base grid')
     parser.add_argument('--plot', action='store_true', help='plot final output before saving')
@@ -96,7 +97,13 @@ def main():
                         help='output region. Defaults to the extent of the base grid.')
     args = parser.parse_args()
 
-    filenames = args.filenames
+    filenames = []
+    if args.input_txt:
+        # Read filenames from file
+        filenames += read_fnames(args.input_txt)
+    # Add filenames from command line
+    filenames += args.filenames
+
     base_fname = args.base
     diff_threshold = args.diff_threshold
     output_fname = args.output

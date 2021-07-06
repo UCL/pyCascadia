@@ -10,3 +10,10 @@ def is_region_valid(region):
         return False
     else:
         return True
+
+def read_fnames(input_txt):
+    """Reads filenames from text file, removing empty lines and training newlines"""
+    with open(input_txt, 'r') as fp:
+        lines = [fname.strip() for fname in fp.readlines() if fname != '\n']
+
+    return lines
