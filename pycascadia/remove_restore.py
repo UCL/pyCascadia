@@ -104,6 +104,8 @@ def main():
     # Add filenames from command line
     filenames += args.filenames
 
+    assert filenames != [], "No filenames given"
+
     base_fname = args.base
     diff_threshold = args.diff_threshold
     output_fname = args.output
