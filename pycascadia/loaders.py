@@ -20,6 +20,8 @@ def load_source(filepath, plot=False, convert_to_xyz=False, filter_nodata=True):
     else:
         raise RuntimeError(f"Error: filetype {ext} not recognised.")
 
+    xr_data = xr_data.astype('float32')
+
     if plot:
         xr_data.plot()
         plt.show()
@@ -67,7 +69,7 @@ def filter_nodata(xyz_data, nodatavals):
 
 def load_netcdf(filepath):
     """Loads netcdf file"""
-    xr_data = xr.open_dataarray(filepath).astype('float32')
+    xr_data = xr.open_dataarray(filepath)
     xr_data = xr_data.rename('z')
     if 'lon' in xr_data.dims:
         # assume lat is also a dimension
