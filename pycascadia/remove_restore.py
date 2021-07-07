@@ -84,7 +84,7 @@ def load_base_grid(fname, region=None, spacing=None):
 def main():
     # Handle arguments
     parser = argparse.ArgumentParser(description='Combine multiple bathymmetry sources into a single grid')
-    parser.add_argument('filenames', nargs='+', help='sources to combine with the base grid')
+    parser.add_argument('filenames', nargs='*', help='sources to combine with the base grid')
     parser.add_argument('--base', required=True, help='base grid')
     parser.add_argument('--input_txt', help='text file containing list of input grids')
     parser.add_argument('--spacing', type=float, help='output grid spacing')
