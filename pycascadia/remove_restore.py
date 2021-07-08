@@ -7,6 +7,16 @@ Note that the remove-restore algorithm consists of only "step D" described in th
 """
 
 from pygmt import blockmedian, surface, grdtrack, grdcut, grdfilter
+from pygmt.clib import Session
+from pygmt.helpers import (
+    GMTTempFile,
+    build_arg_string,
+    fmt_docstring,
+    kwargs_to_strings,
+    use_alias,
+)
+import xarray as xr
+
 import os
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -15,6 +25,33 @@ import argparse
 from pycascadia.loaders import load_source
 from pycascadia.grid import Grid
 from pycascadia.utility import region_to_str, min_regions, is_region_valid, read_fnames
+
+@use_alias(
+    I="spacing",
+    R="region",
+    V="verbose",
+)
+@kwargs_to_strings(R="sequence")
+def nearneighbour(data_xyz, **kwargs):
+    """Uses pyGMT's clib to call GMT's nearneighbour command"""
+    with GMTTempFile(suffix=".csv") as tmpfile:
+        with Session() as lib:
+            file_context = lib.virtualfile_from_data(check_kind="vector", data=data_xyz)
+            with file_context as infile:
+                if "G" not in kwargs.keys():  # if outgrid is unset, output to tempfile
+                    kwargs.update({"G": tmpfile.name})
+                outgrid = kwargs["G"]
+                arg_str = " ".join([infile, build_arg_string(kwargs)])
+                lib.call_module("nearneighbor", arg_str)
+
+        if outgrid == tmpfile.name:  # if user did not set outgrid, return DataArray
+            with xr.open_dataarray(outgrid) as dataarray:
+                result = dataarray.load()
+                _ = result.gmt  # load GMTDataArray accessor information
+        else:
+            result = None  # if user sets an outgrid, return None
+
+    return result
 
 def calc_diff_grid(base_grid, update_grid, diff_threshold=0.0, window_width=None):
     """Calculates difference grid for use in remove-restore"""
@@ -38,18 +75,9 @@ def calc_diff_grid(base_grid, update_grid, diff_threshold=0.0, window_width=None
 
     diff[diff.z.abs() < diff_threshold]['z'] = 0.0 # Filter out small differences
 
-    diff_xyz_fname = "diff.xyz"
-    diff_grid_fname = "diff.nc"
-    diff.to_csv(diff_xyz_fname, sep=' ', header=False, index=False)
-
     NODATA_VAL = 9999
 
-    os.system(f'gmt nearneighbor {diff_xyz_fname} -G{diff_grid_fname} -R{region_to_str(base_grid.region)} -I{base_grid.spacing} -S{2*max_spacing} -N4 -E{NODATA_VAL} -V')
-    diff_grid, _, _ = load_source(diff_grid_fname)
-
-    # Cleanup files
-    os.remove(diff_grid_fname)
-    os.remove(diff_xyz_fname)
+    diff_grid = nearneighbour(diff, region=base_grid.region, spacing=base_grid.spacing, S=2*max_spacing, N=4, E=NODATA_VAL, verbose=True)
 
     # Interpolate between nodata and data regions in update grid
     if window_width:
