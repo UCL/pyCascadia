@@ -17,3 +17,12 @@ def read_fnames(input_txt):
         lines = [fname.strip() for fname in fp.readlines() if fname != '\n']
 
     return lines
+
+def delete_variable(ds, varname):
+    """
+    Remove variable from xarray dataset
+    """
+    if varname in ds:
+        del ds[varname]
+    else:
+        raise ValueError(f"Could not find {varname} in dataset")

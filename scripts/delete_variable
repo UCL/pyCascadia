@@ -6,6 +6,8 @@ Tool to remove specific variables from input netCDF file
 
 import xarray as xr
 import argparse
+from pycascadia.utility import delete_variable
+
 
 def main():
     parser = argparse.ArgumentParser(description='Combine multiple bathymmetry sources into a single grid')
@@ -15,10 +17,7 @@ def main():
     args = parser.parse_args()
 
     ds = xr.load_dataset(args.input)
-    if args.variable in ds:
-        del ds[args.variable]
-    else:
-        raise ValueError(f"Could not find {args.variable} in dataset {args.input}")
+    delete_variable(ds, args.variable)
     ds.to_netcdf(args.output)
 
 if __name__ == "__main__":
