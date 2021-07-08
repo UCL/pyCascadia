@@ -24,12 +24,10 @@ jobs:
         uses: s-weigand/setup-conda@v1
         with:
           python-version: ${{ matrix.python }}
-          conda-channels: conda-forge
 
       - name: Install conda dependencies
         run: |
-          conda install pip
-          conda install -c conda-forge pygmt">=0.3.1" gdal rasterio
+          conda env create
 
       - name: Install package
         run: pip install .[test] flake8
