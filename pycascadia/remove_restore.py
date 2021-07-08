@@ -33,7 +33,10 @@ from pycascadia.utility import region_to_str, min_regions, is_region_valid, read
 )
 @kwargs_to_strings(R="sequence")
 def nearneighbour(data_xyz, **kwargs):
-    """Uses pyGMT's clib to call GMT's nearneighbour command"""
+    """Uses pyGMT's clib to call GMT's nearneighbour command
+
+    Adapted from pyGMT's [blockmedian implementation](https://github.com/GenericMappingTools/pygmt/blob/c0ff7f1add9884305688c2fa15c5f13516b8b960/pygmt/src/blockm.py)
+    """
     with GMTTempFile(suffix=".csv") as tmpfile:
         with Session() as lib:
             file_context = lib.virtualfile_from_data(check_kind="vector", data=data_xyz)
