@@ -29,7 +29,7 @@ jobs:
       - name: Install conda dependencies
         run: |
           conda install pip
-          conda install -c conda-forge pygmt gdal rasterio
+          conda install -c conda-forge pygmt">=0.3.1" gdal rasterio
 
       - name: Install package
         run: pip install .[test] flake8
