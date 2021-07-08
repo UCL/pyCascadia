@@ -24,7 +24,7 @@ jobs:
         with:
           activate-environment: pycascadia
           environment-file: environment.yml
-          python-version: {{ matrix.python }}
+          python-version: ${{ matrix.python }}
           auto-activate-base: false
 
       - name: Install package
