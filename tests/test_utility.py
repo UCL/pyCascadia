@@ -35,5 +35,5 @@ def test_delete_variable():
     assert 'crs' not in ds
 
     # Ensure deleting a missing variable throws
-    with pytest.raises(Exception):
+    with pytest.raises(ValueError, match=f"Could not find crs in dataset"):
         delete_variable(ds, 'crs')
