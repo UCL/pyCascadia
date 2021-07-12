@@ -1,6 +1,7 @@
 import pytest
 
-from pycascadia.utility import is_region_valid, read_fnames
+import xarray as xr
+from pycascadia.utility import is_region_valid, read_fnames, delete_variable
 
 def test_is_region_valid():
     # Maximum > minimum in each direction
@@ -21,3 +22,18 @@ def test_read_fnames():
 
     for in_fname, true_fname in zip(in_fnames, true_fnames):
         assert in_fname == true_fname
+
+def test_delete_variable():
+    fname = './test_data/contains_extra_var.nc'
+    ds = xr.load_dataset(fname)
+
+    # Ensure ds initially contains the variable
+    assert 'crs' in ds
+
+    # Ensure deleting works
+    delete_variable(ds, 'crs')
+    assert 'crs' not in ds
+
+    # Ensure deleting a missing variable throws
+    with pytest.raises(ValueError, match=f"Could not find crs in dataset"):
+        delete_variable(ds, 'crs')

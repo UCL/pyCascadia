@@ -53,6 +53,14 @@ remove-restore -h
 on your command line.
 For more fine-grained control of the `remove-restore` functionality, there is an example Jupyter notebook under `./notebooks/`. Note that to use this, you will need to `pip install jupyter` in the conda environment, too.
 
+### Variable deletion from NetCDF files
+
+`remove-restore` expects a single variable per netCDF file, which is not always the case (see issue #59). The `delete-variable` tool can be used to remove a single variable from a netCDF file in the following way:
+
+```
+delete-variable --input <input.nc> --output <output.nc> --variable <varname>
+```
+
 ### Shape file closing
 
 The scripts `close_boundary.py` and `generate_contour.sh` provide a way to close coastline contours when land intersects the data boundary. These files can be found in the `scripts/` subfolder of your local copy of this GitHub repository, so you should navigate there to use them (or replace the relative path in the commands below, e.g. `python close_boundary.py` -> `python ./scripts/close_boundary.py`).
