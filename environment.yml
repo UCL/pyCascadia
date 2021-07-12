@@ -1,0 +1,11 @@
+name: pycascadia
+channels:
+    - conda-forge
+    - defaults
+dependencies:
+    # Required dependencies
+    - pip
+    - pygmt>=0.3.1
+    - gdal
+    - rasterio
+    - pytest
