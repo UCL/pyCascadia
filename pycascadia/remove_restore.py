@@ -24,7 +24,7 @@ import argparse
 
 from pycascadia.loaders import load_source
 from pycascadia.grid import Grid
-from pycascadia.utility import region_to_str, min_regions, is_region_valid, read_fnames
+from pycascadia.utility import region_to_str, min_regions, is_region_valid, read_fnames, all_values_are_nodata
 
 @use_alias(
     I="spacing",
@@ -65,6 +65,10 @@ def calc_diff_grid(base_grid, update_grid, diff_threshold=0.0, window_width=None
         print("Update grid is entirely outside region of interest. Skipping.")
         return None
 
+    if all_values_are_nodata(update_grid.grid):
+        print("Update grid consists entirely of no_data_values. Skipping")
+        return None
+  
     bmd = blockmedian(update_grid.xyz, spacing=max_spacing, region=minimal_region)
 
     print("Find z in base grid")
