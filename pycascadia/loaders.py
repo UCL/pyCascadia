@@ -32,7 +32,7 @@ def load_source(filepath: str, plot: bool = False) -> Tuple[xr.DataArray, list, 
     else:
         raise RuntimeError(f"Error: filetype {ext} not recognised.")
 
-    xr_data = xr_data.astype('float32')
+    xr_data = xr_data.astype("float32")
 
     if plot:
         xr_data.plot()
@@ -88,8 +88,8 @@ def load_netcdf(filepath: str) -> xr.DataArray:
         grid as xarray array
     """
     xr_data = xr.open_dataarray(filepath)
-    xr_data = xr_data.rename('z')
-    if 'lon' in xr_data.dims:
+    xr_data = xr_data.rename("z")
+    if "lon" in xr_data.dims:
         # assume lat is also a dimension
         xr_data = xr_data.rename({"lon": "x", "lat": "y"})
 

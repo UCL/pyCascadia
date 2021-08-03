@@ -22,8 +22,12 @@ import matplotlib.pyplot as plt
 import argparse
 
 from pycascadia.grid import Grid
-from pycascadia.utility import min_regions, is_region_valid, \
-        read_fnames, all_values_are_nodata
+from pycascadia.utility import (
+    min_regions,
+    is_region_valid,
+    read_fnames,
+    all_values_are_nodata,
+)
 
 
 @use_alias(
@@ -117,9 +121,7 @@ def calc_diff_grid(
         print("Update grid consists entirely of no_data_values. Skipping.")
         return None
 
-    bmd = blockmedian(update_grid.xyz,
-                      spacing=max_spacing,
-                      region=minimal_region)
+    bmd = blockmedian(update_grid.xyz, spacing=max_spacing, region=minimal_region)
 
     print("Find z in base grid")
     base_pts = grdtrack(bmd, base_grid.grid, "base_z", interpolation="l")
@@ -134,16 +136,19 @@ def calc_diff_grid(
 
     NODATA_VAL = 9999
 
-    diff_grid = nearneighbour(diff,
-                              region=base_grid.region,
-                              spacing=base_grid.spacing,
-                              S=2*max_spacing, N=4, E=NODATA_VAL,
-                              verbose=True)
+    diff_grid = nearneighbour(
+        diff,
+        region=base_grid.region,
+        spacing=base_grid.spacing,
+        S=2 * max_spacing,
+        N=4,
+        E=NODATA_VAL,
+        verbose=True,
+    )
 
     # Interpolate between nodata and data regions in update grid
     if window_width:
-        interp_grid = create_interpolation_grid(
-            diff_grid, NODATA_VAL, window_width)
+        interp_grid = create_interpolation_grid(diff_grid, NODATA_VAL, window_width)
 
         # Filter out nodata
         diff_grid = diff_grid.where(diff_grid != NODATA_VAL, 0.0)
@@ -182,18 +187,38 @@ def main():
     This handles arguments, applies the remove-restore algorithm and, optionally, plots the results.
     """
     # Handle arguments
-    parser = argparse.ArgumentParser(description='Combine multiple bathymetry sources into a single grid')
-    parser.add_argument('filenames', nargs='*', help='sources to combine with the base grid')
-    parser.add_argument('--base', required=True, help='base grid')
-    parser.add_argument('--input_txt', help='text file containing list of input grids')
-    parser.add_argument('--spacing', type=float, help='output grid spacing')
-    parser.add_argument('--diff_threshold', default=0.0, help='value above which differences will be added to the base grid')
-    parser.add_argument('--plot', action='store_true', help='plot final output before saving')
-    parser.add_argument('--output', required=True, help='filename of final output')
-    parser.add_argument('--window_width', required=False, type=float,
-                        help='Enable windowing of update grid and specify width of window in degrees')
-    parser.add_argument('--region_of_interest', metavar=('xmin', 'xmax', 'ymin', 'ymax'), required=False, nargs=4, type=float,
-                        help='output region. Defaults to the extent of the base grid.')
+    parser = argparse.ArgumentParser(
+        description="Combine multiple bathymetry sources into a single grid"
+    )
+    parser.add_argument(
+        "filenames", nargs="*", help="sources to combine with the base grid"
+    )
+    parser.add_argument("--base", required=True, help="base grid")
+    parser.add_argument("--input_txt", help="text file containing list of input grids")
+    parser.add_argument("--spacing", type=float, help="output grid spacing")
+    parser.add_argument(
+        "--diff_threshold",
+        default=0.0,
+        help="value above which differences will be added to the base grid",
+    )
+    parser.add_argument(
+        "--plot", action="store_true", help="plot final output before saving"
+    )
+    parser.add_argument("--output", required=True, help="filename of final output")
+    parser.add_argument(
+        "--window_width",
+        required=False,
+        type=float,
+        help="Enable windowing of update grid and specify width of window in degrees",
+    )
+    parser.add_argument(
+        "--region_of_interest",
+        metavar=("xmin", "xmax", "ymin", "ymax"),
+        required=False,
+        nargs=4,
+        type=float,
+        help="output region. Defaults to the extent of the base grid.",
+    )
     args = parser.parse_args()
 
     filenames = []
