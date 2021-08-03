@@ -1,7 +1,7 @@
 import pytest
 
 import xarray as xr
-from pycascadia.utility import is_region_valid, read_fnames, delete_variable
+from pycascadia.utility import is_region_valid, all_values_are_nodata, read_fnames, delete_variable
 
 def test_is_region_valid():
     # Maximum > minimum in each direction
@@ -15,6 +15,13 @@ def test_is_region_valid():
     # min y > max y
     invalid_region_y = [100, 200, 400, 300]
     assert is_region_valid(invalid_region_y) == False
+
+def test_all_values_are_nodata():
+    nodata_grid = xr.DataArray([9999,9999,9999,9999])
+    nodata_grid.attrs['nodatavals'] = 7777
+    assert all_values_are_nodata(nodata_grid) == False
+    nodata_grid.attrs['nodatavals'] = 9999
+    assert all_values_are_nodata(nodata_grid) == True
 
 def test_read_fnames():
     in_fnames = read_fnames('test_data/filenames.txt')

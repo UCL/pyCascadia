@@ -11,6 +11,9 @@ def is_region_valid(region):
     else:
         return True
 
+def all_values_are_nodata(grid):
+    return (grid.nodatavals == grid.values).all()
+
 def read_fnames(input_txt):
     """Reads filenames from text file, removing empty lines and training newlines"""
     with open(input_txt, 'r') as fp:
