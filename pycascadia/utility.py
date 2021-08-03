@@ -91,7 +91,6 @@ def filter_nodata(xyz_data: pandas.DataFrame, nodatavals: list) -> None:
         nodatavals: list of values to remove from xyz_data
     """
     for nodata_val in nodatavals:
-<<<<<<< HEAD
         xyz_data.where(xyz_data['z'] != nodata_val, inplace=True)
 
 
@@ -103,6 +102,3 @@ def delete_variable(ds, varname):
         del ds[varname]
     else:
         raise ValueError(f"Could not find {varname} in dataset")
-=======
-        xyz_data.where(xyz_data["z"] != nodata_val, inplace=True)
->>>>>>> 695a79a (Fixed tests which broke due to new type annotations, formatted with black and checked with flake8)
