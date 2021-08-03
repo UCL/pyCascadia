@@ -10,6 +10,10 @@ import matplotlib.pyplot as plt
 def load_source(filepath: str, plot: bool = False) -> Tuple[xr.DataArray, list, float]:
     """Loads an xarray dataarray from file
 
+    Supported file formats are:
+        - GeoTiff
+        - netCDF
+
     Args:
         filepath: name of file to load
         plot: whether to plot loaded grid
@@ -111,6 +115,7 @@ def load_geotiff(filepath: str) -> xr.DataArray:
     print(f"Resolution: ({xr_data.sizes['x']}, {xr_data.sizes['y']})")
     print(f"CRS: {xr_data.crs}")
 
+    # Sort by y coord because rasterio loads the file "upside down"
     xr_data = xr_data.sortby("y")
 
     return xr_data

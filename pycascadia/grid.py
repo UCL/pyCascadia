@@ -16,7 +16,9 @@ class Grid:
         - conversion to a list of xyz datapoints.
         - saved to file
 
-    The internal grid may also be manipulater and is exposed through Grid.grid or Grid.xyz (if the grid has already been converted).
+    Coordinates will be labelled `x` and `y`, and (depth/elevation) values will be labelled `z`.
+
+    The internal grid may also be manipulated and is exposed through Grid.grid or Grid.xyz (if the grid has already been converted).
     """
 
     def __init__(self, fname: str, convert_to_xyz: bool = False) -> None:
@@ -37,7 +39,7 @@ class Grid:
 
     def load(self, fname: str) -> None:
         """
-        Loads data from file
+        Loads data from file. See loaders for supported file formats.
 
         Args:
             fname: Input grid filename

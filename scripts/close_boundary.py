@@ -16,7 +16,7 @@ def clip_to_value(arr, test_arr=None, value=0.0):
 def main():
     # Handle arguments
     parser = argparse.ArgumentParser(
-        description="Add halo surrounding given netcdf file"
+        description="Add piecewise halo surrounding given netcdf file"
     )
     parser.add_argument("--input", required=True, help="input file")
     parser.add_argument("--output", required=True, help="output file")

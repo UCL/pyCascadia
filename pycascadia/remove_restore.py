@@ -179,10 +179,10 @@ def load_base_grid(fname: str, region: list = None, spacing: bool = None) -> Gri
 def main():
     """Main entry point for remove-restore command line tool
 
-    This handles arguments, applies the remove-restore algorithm then, optionally, plots the results.
+    This handles arguments, applies the remove-restore algorithm and, optionally, plots the results.
     """
     # Handle arguments
-    parser = argparse.ArgumentParser(description='Combine multiple bathymmetry sources into a single grid')
+    parser = argparse.ArgumentParser(description='Combine multiple bathymetry sources into a single grid')
     parser.add_argument('filenames', nargs='*', help='sources to combine with the base grid')
     parser.add_argument('--base', required=True, help='base grid')
     parser.add_argument('--input_txt', help='text file containing list of input grids')
