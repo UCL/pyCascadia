@@ -66,7 +66,7 @@ def calc_diff_grid(base_grid, update_grid, diff_threshold=0.0, window_width=None
         return None
 
     if all_values_are_nodata(update_grid.grid):
-        print("Update grid consists entirely of no_data_values. Skipping")
+        print("Update grid consists entirely of no_data_values. Skipping.")
         return None
   
     bmd = blockmedian(update_grid.xyz, spacing=max_spacing, region=minimal_region)

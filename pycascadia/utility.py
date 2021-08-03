@@ -12,10 +12,7 @@ def is_region_valid(region):
         return True
 
 def all_values_are_nodata(grid):
-    if (grid.nodatavals == grid.values).all():
-        return True
-    else:
-        return False
+    return (grid.nodatavals == grid.values).all()
 
 def read_fnames(input_txt):
     """Reads filenames from text file, removing empty lines and training newlines"""
