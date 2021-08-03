@@ -1,4 +1,4 @@
-name: Pytest
+name: Test and lint
 
 on:
   push:
