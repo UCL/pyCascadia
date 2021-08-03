@@ -1,0 +1,468 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.8.1" />
+<title>pycascadia.grid API documentation</title>
+<meta name="description" content="Grid contains a grid of data in xarray format" />
+<link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
+<link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
+<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>pycascadia.grid</code></h1>
+</header>
+<section id="section-intro">
+<p>Grid contains a grid of data in xarray format</p>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">&#34;&#34;&#34;Grid contains a grid of data in xarray format&#34;&#34;&#34;
+
+import os
+import pandas
+from pygmt import grdcut
+
+from pycascadia.loaders import load_source, extract_region
+from pycascadia.utility import region_to_str, xr_to_xyz, filter_nodata
+
+
+class Grid:
+    &#34;&#34;&#34;Grid contains a grid of data in xarray format and optionally as xyz points in pandas dataframe format.
+
+    Grids are intended to be initially loaded from file and can be further manipulated in the following ways:
+
+    - resampling to a different grid spacing
+    - cropping to a given region
+    - conversion to a list of xyz datapoints.
+    - saved to file
+
+    Coordinates will be labelled `x` and `y`, and (depth/elevation) values will be labelled `z`.
+
+    The internal grid may also be manipulated and is exposed through Grid.grid or Grid.xyz (if the grid has already been converted).
+    &#34;&#34;&#34;
+
+    def __init__(self, fname: str, convert_to_xyz: bool = False) -&gt; None:
+        &#34;&#34;&#34;
+        Constructor
+
+        Args:
+            fname: Input grid filename.
+            convert_to_xyz: Whether the grid should be converted to xyz points.
+        &#34;&#34;&#34;
+        self.load(fname)
+
+        if convert_to_xyz:
+            self.xyz = self.as_xyz()
+
+    def load(self, fname: str) -&gt; None:
+        &#34;&#34;&#34;
+        Loads data from file. See loaders for supported file formats.
+
+        Args:
+            fname: Input grid filename.
+        &#34;&#34;&#34;
+        self.grid, self.region, self.spacing = load_source(fname)
+
+    def crop(self, region: list) -&gt; None:
+        &#34;&#34;&#34;
+        Crops grid using grdcut.
+
+        Args:
+            region: Bounding box of region to crop to (in format [xmin, xmax, ymin, ymax]).
+        &#34;&#34;&#34;
+        if region == self.region:
+            return
+
+        self.grid = grdcut(self.grid, region=region)
+        self.region = extract_region(self.grid)
+
+    def resample(self, spacing: float) -&gt; None:
+        &#34;&#34;&#34;
+        Resamples the loaded grid using gdal&#39;s grdsample.
+
+        Args:
+            spacing: Grid spacing of resampled grid.
+        &#34;&#34;&#34;
+        if spacing == self.spacing:
+            return
+
+        print(f&#34;Resampling from {self.spacing} to {spacing}&#34;)
+        in_fname = &#34;original.nc&#34;
+        self.save_grid(in_fname)
+        out_fname = &#34;resampled.nc&#34;
+        os.system(
+            f&#34;gmt grdsample {in_fname} -G{out_fname} -R{region_to_str(self.region)} -I{spacing} -V&#34;
+        )
+        self.load(out_fname)
+        os.remove(in_fname)
+        os.remove(out_fname)
+
+    def as_xyz(self) -&gt; pandas.DataFrame:
+        &#34;&#34;&#34;
+        Returns pandas dataframe representation.
+        &#34;&#34;&#34;
+        xyz_data = xr_to_xyz(self.grid)
+        if hasattr(self.grid, &#34;nodatavals&#34;):
+            filter_nodata(xyz_data, self.grid.nodatavals)
+        return xyz_data
+
+    def plot(self, ax=None) -&gt; None:
+        &#34;&#34;&#34;
+        Plots data (useful for testing).
+
+        Args:
+            ax: Axis used for plotting (will be created if not supplied).
+        &#34;&#34;&#34;
+        self.grid.plot(ax=ax)
+
+    def save_grid(self, fname: str) -&gt; None:
+        &#34;&#34;&#34;
+        Saves grid to netcdf file.
+
+        Args:
+            fname: Output filename.
+        &#34;&#34;&#34;
+        self.grid.to_netcdf(fname)</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="pycascadia.grid.Grid"><code class="flex name class">
+<span>class <span class="ident">Grid</span></span>
+<span>(</span><span>fname: str, convert_to_xyz: bool = False)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Grid contains a grid of data in xarray format and optionally as xyz points in pandas dataframe format.</p>
+<p>Grids are intended to be initially loaded from file and can be further manipulated in the following ways:</p>
+<ul>
+<li>resampling to a different grid spacing</li>
+<li>cropping to a given region</li>
+<li>conversion to a list of xyz datapoints.</li>
+<li>saved to file</li>
+</ul>
+<p>Coordinates will be labelled <code>x</code> and <code>y</code>, and (depth/elevation) values will be labelled <code>z</code>.</p>
+<p>The internal grid may also be manipulated and is exposed through Grid.grid or Grid.xyz (if the grid has already been converted).</p>
+<p>Constructor</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>fname</code></strong></dt>
+<dd>Input grid filename.</dd>
+<dt><strong><code>convert_to_xyz</code></strong></dt>
+<dd>Whether the grid should be converted to xyz points.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Grid:
+    &#34;&#34;&#34;Grid contains a grid of data in xarray format and optionally as xyz points in pandas dataframe format.
+
+    Grids are intended to be initially loaded from file and can be further manipulated in the following ways:
+
+    - resampling to a different grid spacing
+    - cropping to a given region
+    - conversion to a list of xyz datapoints.
+    - saved to file
+
+    Coordinates will be labelled `x` and `y`, and (depth/elevation) values will be labelled `z`.
+
+    The internal grid may also be manipulated and is exposed through Grid.grid or Grid.xyz (if the grid has already been converted).
+    &#34;&#34;&#34;
+
+    def __init__(self, fname: str, convert_to_xyz: bool = False) -&gt; None:
+        &#34;&#34;&#34;
+        Constructor
+
+        Args:
+            fname: Input grid filename.
+            convert_to_xyz: Whether the grid should be converted to xyz points.
+        &#34;&#34;&#34;
+        self.load(fname)
+
+        if convert_to_xyz:
+            self.xyz = self.as_xyz()
+
+    def load(self, fname: str) -&gt; None:
+        &#34;&#34;&#34;
+        Loads data from file. See loaders for supported file formats.
+
+        Args:
+            fname: Input grid filename.
+        &#34;&#34;&#34;
+        self.grid, self.region, self.spacing = load_source(fname)
+
+    def crop(self, region: list) -&gt; None:
+        &#34;&#34;&#34;
+        Crops grid using grdcut.
+
+        Args:
+            region: Bounding box of region to crop to (in format [xmin, xmax, ymin, ymax]).
+        &#34;&#34;&#34;
+        if region == self.region:
+            return
+
+        self.grid = grdcut(self.grid, region=region)
+        self.region = extract_region(self.grid)
+
+    def resample(self, spacing: float) -&gt; None:
+        &#34;&#34;&#34;
+        Resamples the loaded grid using gdal&#39;s grdsample.
+
+        Args:
+            spacing: Grid spacing of resampled grid.
+        &#34;&#34;&#34;
+        if spacing == self.spacing:
+            return
+
+        print(f&#34;Resampling from {self.spacing} to {spacing}&#34;)
+        in_fname = &#34;original.nc&#34;
+        self.save_grid(in_fname)
+        out_fname = &#34;resampled.nc&#34;
+        os.system(
+            f&#34;gmt grdsample {in_fname} -G{out_fname} -R{region_to_str(self.region)} -I{spacing} -V&#34;
+        )
+        self.load(out_fname)
+        os.remove(in_fname)
+        os.remove(out_fname)
+
+    def as_xyz(self) -&gt; pandas.DataFrame:
+        &#34;&#34;&#34;
+        Returns pandas dataframe representation.
+        &#34;&#34;&#34;
+        xyz_data = xr_to_xyz(self.grid)
+        if hasattr(self.grid, &#34;nodatavals&#34;):
+            filter_nodata(xyz_data, self.grid.nodatavals)
+        return xyz_data
+
+    def plot(self, ax=None) -&gt; None:
+        &#34;&#34;&#34;
+        Plots data (useful for testing).
+
+        Args:
+            ax: Axis used for plotting (will be created if not supplied).
+        &#34;&#34;&#34;
+        self.grid.plot(ax=ax)
+
+    def save_grid(self, fname: str) -&gt; None:
+        &#34;&#34;&#34;
+        Saves grid to netcdf file.
+
+        Args:
+            fname: Output filename.
+        &#34;&#34;&#34;
+        self.grid.to_netcdf(fname)</code></pre>
+</details>
+<h3>Methods</h3>
+<dl>
+<dt id="pycascadia.grid.Grid.as_xyz"><code class="name flex">
+<span>def <span class="ident">as_xyz</span></span>(<span>self) -> pandas.core.frame.DataFrame</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Returns pandas dataframe representation.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def as_xyz(self) -&gt; pandas.DataFrame:
+    &#34;&#34;&#34;
+    Returns pandas dataframe representation.
+    &#34;&#34;&#34;
+    xyz_data = xr_to_xyz(self.grid)
+    if hasattr(self.grid, &#34;nodatavals&#34;):
+        filter_nodata(xyz_data, self.grid.nodatavals)
+    return xyz_data</code></pre>
+</details>
+</dd>
+<dt id="pycascadia.grid.Grid.crop"><code class="name flex">
+<span>def <span class="ident">crop</span></span>(<span>self, region: list) -> NoneType</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Crops grid using grdcut.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>region</code></strong></dt>
+<dd>Bounding box of region to crop to (in format [xmin, xmax, ymin, ymax]).</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def crop(self, region: list) -&gt; None:
+    &#34;&#34;&#34;
+    Crops grid using grdcut.
+
+    Args:
+        region: Bounding box of region to crop to (in format [xmin, xmax, ymin, ymax]).
+    &#34;&#34;&#34;
+    if region == self.region:
+        return
+
+    self.grid = grdcut(self.grid, region=region)
+    self.region = extract_region(self.grid)</code></pre>
+</details>
+</dd>
+<dt id="pycascadia.grid.Grid.load"><code class="name flex">
+<span>def <span class="ident">load</span></span>(<span>self, fname: str) -> NoneType</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Loads data from file. See loaders for supported file formats.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>fname</code></strong></dt>
+<dd>Input grid filename.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def load(self, fname: str) -&gt; None:
+    &#34;&#34;&#34;
+    Loads data from file. See loaders for supported file formats.
+
+    Args:
+        fname: Input grid filename.
+    &#34;&#34;&#34;
+    self.grid, self.region, self.spacing = load_source(fname)</code></pre>
+</details>
+</dd>
+<dt id="pycascadia.grid.Grid.plot"><code class="name flex">
+<span>def <span class="ident">plot</span></span>(<span>self, ax=None) -> NoneType</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Plots data (useful for testing).</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>ax</code></strong></dt>
+<dd>Axis used for plotting (will be created if not supplied).</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def plot(self, ax=None) -&gt; None:
+    &#34;&#34;&#34;
+    Plots data (useful for testing).
+
+    Args:
+        ax: Axis used for plotting (will be created if not supplied).
+    &#34;&#34;&#34;
+    self.grid.plot(ax=ax)</code></pre>
+</details>
+</dd>
+<dt id="pycascadia.grid.Grid.resample"><code class="name flex">
+<span>def <span class="ident">resample</span></span>(<span>self, spacing: float) -> NoneType</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Resamples the loaded grid using gdal's grdsample.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>spacing</code></strong></dt>
+<dd>Grid spacing of resampled grid.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def resample(self, spacing: float) -&gt; None:
+    &#34;&#34;&#34;
+    Resamples the loaded grid using gdal&#39;s grdsample.
+
+    Args:
+        spacing: Grid spacing of resampled grid.
+    &#34;&#34;&#34;
+    if spacing == self.spacing:
+        return
+
+    print(f&#34;Resampling from {self.spacing} to {spacing}&#34;)
+    in_fname = &#34;original.nc&#34;
+    self.save_grid(in_fname)
+    out_fname = &#34;resampled.nc&#34;
+    os.system(
+        f&#34;gmt grdsample {in_fname} -G{out_fname} -R{region_to_str(self.region)} -I{spacing} -V&#34;
+    )
+    self.load(out_fname)
+    os.remove(in_fname)
+    os.remove(out_fname)</code></pre>
+</details>
+</dd>
+<dt id="pycascadia.grid.Grid.save_grid"><code class="name flex">
+<span>def <span class="ident">save_grid</span></span>(<span>self, fname: str) -> NoneType</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Saves grid to netcdf file.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>fname</code></strong></dt>
+<dd>Output filename.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def save_grid(self, fname: str) -&gt; None:
+    &#34;&#34;&#34;
+    Saves grid to netcdf file.
+
+    Args:
+        fname: Output filename.
+    &#34;&#34;&#34;
+    self.grid.to_netcdf(fname)</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="pycascadia" href="index.html">pycascadia</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="pycascadia.grid.Grid" href="#pycascadia.grid.Grid">Grid</a></code></h4>
+<ul class="two-column">
+<li><code><a title="pycascadia.grid.Grid.as_xyz" href="#pycascadia.grid.Grid.as_xyz">as_xyz</a></code></li>
+<li><code><a title="pycascadia.grid.Grid.crop" href="#pycascadia.grid.Grid.crop">crop</a></code></li>
+<li><code><a title="pycascadia.grid.Grid.load" href="#pycascadia.grid.Grid.load">load</a></code></li>
+<li><code><a title="pycascadia.grid.Grid.plot" href="#pycascadia.grid.Grid.plot">plot</a></code></li>
+<li><code><a title="pycascadia.grid.Grid.resample" href="#pycascadia.grid.Grid.resample">resample</a></code></li>
+<li><code><a title="pycascadia.grid.Grid.save_grid" href="#pycascadia.grid.Grid.save_grid">save_grid</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.8.1</a>.</p>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad()</script>
+</body>
+</html>

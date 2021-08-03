@@ -1,0 +1,448 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.8.1" />
+<title>pycascadia.utility API documentation</title>
+<meta name="description" content="Misc utility functions" />
+<link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
+<link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
+<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>pycascadia.utility</code></h1>
+</header>
+<section id="section-intro">
+<p>Misc utility functions</p>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">&#34;&#34;&#34;
+Misc utility functions
+&#34;&#34;&#34;
+
+import xarray as xr
+import pandas
+
+
+def region_to_str(region: list) -&gt; str:
+    &#34;&#34;&#34;Convert region list to string format suitable for GMT.
+
+    Args:
+        region: Bounding box in format [xmin, xmax, ymin, ymax].
+
+    Returns:
+        Region in string format suitable for GMT.
+    &#34;&#34;&#34;
+    return &#34;/&#34;.join(map(str, region))
+
+
+def min_regions(region1: list, region2: list) -&gt; list:
+    &#34;&#34;&#34;Calculates the intersection of the two regions.
+
+    Args:
+        region1: First region.
+        region2: Second region.
+
+    Returns:
+        Region representing the intersection of two input regions.
+    &#34;&#34;&#34;
+    return [
+        max(region1[0], region2[0]),
+        min(region1[1], region2[1]),
+        max(region1[2], region2[2]),
+        min(region1[3], region2[3]),
+    ]
+
+
+def is_region_valid(region: list) -&gt; bool:
+    &#34;&#34;&#34;Determines if input region is a valid region, that is its right hand
+    side is to the right of its left, and similar for the upper and lower sides.
+
+    Args:
+        region: Input region.
+
+    Returns:
+        True if region valid, False otherwise.
+    &#34;&#34;&#34;
+    if region[1] &lt; region[0] or region[3] &lt; region[2]:
+        return False
+    else:
+        return True
+
+
+def all_values_are_nodata(grid: xr.DataArray) -&gt; bool:
+    &#34;&#34;&#34;Determines if all values in grid are nodata
+
+    Args:
+        grid: Xarray grid.
+
+    Returns:
+        True if all values in grid are nodata values, False otherwise.
+    &#34;&#34;&#34;
+    return (grid.nodatavals == grid.values).all()
+
+
+def read_fnames(input_txt: str) -&gt; list:
+    &#34;&#34;&#34;Reads filenames from text file, removing empty lines
+    and training newlines.
+
+    Args:
+        input_txt: File from which filenames will be read.
+
+    Returns:
+        List of filenames.
+    &#34;&#34;&#34;
+    with open(input_txt, &#34;r&#34;) as fp:
+        lines = [fname.strip() for fname in fp.readlines() if fname != &#34;\n&#34;]
+
+    return lines
+
+
+def xr_to_xyz(xr_data: xr.DataArray) -&gt; pandas.DataFrame:
+    &#34;&#34;&#34;Converts an xarray dataarray into a pandas dataframe.
+
+    This requires the input coordinates to be named (x,y) and the
+    elevation to be named z.
+
+    Args:
+        xr_data: Xarray grid.
+
+    Returns:
+        Pandas dataframe of xyz points.
+    &#34;&#34;&#34;
+    xyz_data = xr_data.to_dataframe()
+    xyz_data = xyz_data.reset_index()
+    xyz_data = xyz_data[[&#34;x&#34;, &#34;y&#34;, &#34;z&#34;]]
+    return xyz_data
+
+
+def filter_nodata(xyz_data: pandas.DataFrame, nodatavals: list) -&gt; None:
+    &#34;&#34;&#34;Removes values in nodatavals from input.
+
+    Args:
+        xyz_data: Dataframe of points to filter.
+        nodatavals: List of values to remove from xyz_data.
+    &#34;&#34;&#34;
+    for nodata_val in nodatavals:
+        xyz_data.where(xyz_data[&#34;z&#34;] != nodata_val, inplace=True)
+
+
+def delete_variable(ds: xr.Dataset, varname: str) -&gt; None:
+    &#34;&#34;&#34;
+    Remove variable from xarray dataset.
+
+    Args:
+        ds: Dataset from which the variable will be removed.
+        varname: Name of variable to be removed.
+    &#34;&#34;&#34;
+    if varname in ds:
+        del ds[varname]
+    else:
+        raise ValueError(f&#34;Could not find {varname} in dataset&#34;)</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="pycascadia.utility.all_values_are_nodata"><code class="name flex">
+<span>def <span class="ident">all_values_are_nodata</span></span>(<span>grid: xarray.core.dataarray.DataArray) -> bool</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Determines if all values in grid are nodata</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>grid</code></strong></dt>
+<dd>Xarray grid.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>True if all values in grid are nodata values, False otherwise.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def all_values_are_nodata(grid: xr.DataArray) -&gt; bool:
+    &#34;&#34;&#34;Determines if all values in grid are nodata
+
+    Args:
+        grid: Xarray grid.
+
+    Returns:
+        True if all values in grid are nodata values, False otherwise.
+    &#34;&#34;&#34;
+    return (grid.nodatavals == grid.values).all()</code></pre>
+</details>
+</dd>
+<dt id="pycascadia.utility.delete_variable"><code class="name flex">
+<span>def <span class="ident">delete_variable</span></span>(<span>ds: xarray.core.dataset.Dataset, varname: str) -> NoneType</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Remove variable from xarray dataset.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>ds</code></strong></dt>
+<dd>Dataset from which the variable will be removed.</dd>
+<dt><strong><code>varname</code></strong></dt>
+<dd>Name of variable to be removed.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def delete_variable(ds: xr.Dataset, varname: str) -&gt; None:
+    &#34;&#34;&#34;
+    Remove variable from xarray dataset.
+
+    Args:
+        ds: Dataset from which the variable will be removed.
+        varname: Name of variable to be removed.
+    &#34;&#34;&#34;
+    if varname in ds:
+        del ds[varname]
+    else:
+        raise ValueError(f&#34;Could not find {varname} in dataset&#34;)</code></pre>
+</details>
+</dd>
+<dt id="pycascadia.utility.filter_nodata"><code class="name flex">
+<span>def <span class="ident">filter_nodata</span></span>(<span>xyz_data: pandas.core.frame.DataFrame, nodatavals: list) -> NoneType</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Removes values in nodatavals from input.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>xyz_data</code></strong></dt>
+<dd>Dataframe of points to filter.</dd>
+<dt><strong><code>nodatavals</code></strong></dt>
+<dd>List of values to remove from xyz_data.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def filter_nodata(xyz_data: pandas.DataFrame, nodatavals: list) -&gt; None:
+    &#34;&#34;&#34;Removes values in nodatavals from input.
+
+    Args:
+        xyz_data: Dataframe of points to filter.
+        nodatavals: List of values to remove from xyz_data.
+    &#34;&#34;&#34;
+    for nodata_val in nodatavals:
+        xyz_data.where(xyz_data[&#34;z&#34;] != nodata_val, inplace=True)</code></pre>
+</details>
+</dd>
+<dt id="pycascadia.utility.is_region_valid"><code class="name flex">
+<span>def <span class="ident">is_region_valid</span></span>(<span>region: list) -> bool</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Determines if input region is a valid region, that is its right hand
+side is to the right of its left, and similar for the upper and lower sides.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>region</code></strong></dt>
+<dd>Input region.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>True if region valid, False otherwise.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def is_region_valid(region: list) -&gt; bool:
+    &#34;&#34;&#34;Determines if input region is a valid region, that is its right hand
+    side is to the right of its left, and similar for the upper and lower sides.
+
+    Args:
+        region: Input region.
+
+    Returns:
+        True if region valid, False otherwise.
+    &#34;&#34;&#34;
+    if region[1] &lt; region[0] or region[3] &lt; region[2]:
+        return False
+    else:
+        return True</code></pre>
+</details>
+</dd>
+<dt id="pycascadia.utility.min_regions"><code class="name flex">
+<span>def <span class="ident">min_regions</span></span>(<span>region1: list, region2: list) -> list</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Calculates the intersection of the two regions.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>region1</code></strong></dt>
+<dd>First region.</dd>
+<dt><strong><code>region2</code></strong></dt>
+<dd>Second region.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>Region representing the intersection of two input regions.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def min_regions(region1: list, region2: list) -&gt; list:
+    &#34;&#34;&#34;Calculates the intersection of the two regions.
+
+    Args:
+        region1: First region.
+        region2: Second region.
+
+    Returns:
+        Region representing the intersection of two input regions.
+    &#34;&#34;&#34;
+    return [
+        max(region1[0], region2[0]),
+        min(region1[1], region2[1]),
+        max(region1[2], region2[2]),
+        min(region1[3], region2[3]),
+    ]</code></pre>
+</details>
+</dd>
+<dt id="pycascadia.utility.read_fnames"><code class="name flex">
+<span>def <span class="ident">read_fnames</span></span>(<span>input_txt: str) -> list</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Reads filenames from text file, removing empty lines
+and training newlines.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>input_txt</code></strong></dt>
+<dd>File from which filenames will be read.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>List of filenames.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def read_fnames(input_txt: str) -&gt; list:
+    &#34;&#34;&#34;Reads filenames from text file, removing empty lines
+    and training newlines.
+
+    Args:
+        input_txt: File from which filenames will be read.
+
+    Returns:
+        List of filenames.
+    &#34;&#34;&#34;
+    with open(input_txt, &#34;r&#34;) as fp:
+        lines = [fname.strip() for fname in fp.readlines() if fname != &#34;\n&#34;]
+
+    return lines</code></pre>
+</details>
+</dd>
+<dt id="pycascadia.utility.region_to_str"><code class="name flex">
+<span>def <span class="ident">region_to_str</span></span>(<span>region: list) -> str</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Convert region list to string format suitable for GMT.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>region</code></strong></dt>
+<dd>Bounding box in format [xmin, xmax, ymin, ymax].</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>Region in string format suitable for GMT.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def region_to_str(region: list) -&gt; str:
+    &#34;&#34;&#34;Convert region list to string format suitable for GMT.
+
+    Args:
+        region: Bounding box in format [xmin, xmax, ymin, ymax].
+
+    Returns:
+        Region in string format suitable for GMT.
+    &#34;&#34;&#34;
+    return &#34;/&#34;.join(map(str, region))</code></pre>
+</details>
+</dd>
+<dt id="pycascadia.utility.xr_to_xyz"><code class="name flex">
+<span>def <span class="ident">xr_to_xyz</span></span>(<span>xr_data: xarray.core.dataarray.DataArray) -> pandas.core.frame.DataFrame</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Converts an xarray dataarray into a pandas dataframe.</p>
+<p>This requires the input coordinates to be named (x,y) and the
+elevation to be named z.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>xr_data</code></strong></dt>
+<dd>Xarray grid.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>Pandas dataframe of xyz points.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def xr_to_xyz(xr_data: xr.DataArray) -&gt; pandas.DataFrame:
+    &#34;&#34;&#34;Converts an xarray dataarray into a pandas dataframe.
+
+    This requires the input coordinates to be named (x,y) and the
+    elevation to be named z.
+
+    Args:
+        xr_data: Xarray grid.
+
+    Returns:
+        Pandas dataframe of xyz points.
+    &#34;&#34;&#34;
+    xyz_data = xr_data.to_dataframe()
+    xyz_data = xyz_data.reset_index()
+    xyz_data = xyz_data[[&#34;x&#34;, &#34;y&#34;, &#34;z&#34;]]
+    return xyz_data</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="pycascadia" href="index.html">pycascadia</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="pycascadia.utility.all_values_are_nodata" href="#pycascadia.utility.all_values_are_nodata">all_values_are_nodata</a></code></li>
+<li><code><a title="pycascadia.utility.delete_variable" href="#pycascadia.utility.delete_variable">delete_variable</a></code></li>
+<li><code><a title="pycascadia.utility.filter_nodata" href="#pycascadia.utility.filter_nodata">filter_nodata</a></code></li>
+<li><code><a title="pycascadia.utility.is_region_valid" href="#pycascadia.utility.is_region_valid">is_region_valid</a></code></li>
+<li><code><a title="pycascadia.utility.min_regions" href="#pycascadia.utility.min_regions">min_regions</a></code></li>
+<li><code><a title="pycascadia.utility.read_fnames" href="#pycascadia.utility.read_fnames">read_fnames</a></code></li>
+<li><code><a title="pycascadia.utility.region_to_str" href="#pycascadia.utility.region_to_str">region_to_str</a></code></li>
+<li><code><a title="pycascadia.utility.xr_to_xyz" href="#pycascadia.utility.xr_to_xyz">xr_to_xyz</a></code></li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.8.1</a>.</p>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad()</script>
+</body>
+</html>
