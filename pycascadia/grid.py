@@ -1,3 +1,5 @@
+"""Grid contains a grid of data in xarray format"""
+
 import os
 import pandas
 from pygmt import grdcut
@@ -11,10 +13,10 @@ class Grid:
 
     Grids are intended to be initially loaded from file and can be further manipulated in the following ways:
 
-        - resampling to a different grid spacing
-        - cropping to a given region
-        - conversion to a list of xyz datapoints.
-        - saved to file
+    - resampling to a different grid spacing
+    - cropping to a given region
+    - conversion to a list of xyz datapoints.
+    - saved to file
 
     Coordinates will be labelled `x` and `y`, and (depth/elevation) values will be labelled `z`.
 
@@ -26,11 +28,8 @@ class Grid:
         Constructor
 
         Args:
-            fname: Input grid filename
-            convert_to_xyz: Whether the grid should be converted to xyz points
-
-        Raises:
-            None
+            fname: Input grid filename.
+            convert_to_xyz: Whether the grid should be converted to xyz points.
         """
         self.load(fname)
 
@@ -42,16 +41,16 @@ class Grid:
         Loads data from file. See loaders for supported file formats.
 
         Args:
-            fname: Input grid filename
+            fname: Input grid filename.
         """
         self.grid, self.region, self.spacing = load_source(fname)
 
     def crop(self, region: list) -> None:
         """
-        Crops grid using grdcut
+        Crops grid using grdcut.
 
         Args:
-            region: bounding box of region to crop to (in format [xmin, xmax, ymin, ymax])
+            region: Bounding box of region to crop to (in format [xmin, xmax, ymin, ymax]).
         """
         if region == self.region:
             return
@@ -61,10 +60,10 @@ class Grid:
 
     def resample(self, spacing: float) -> None:
         """
-        Resamples the loaded grid using gdal's grdsample
+        Resamples the loaded grid using gdal's grdsample.
 
         Args:
-            spacing: Grid spacing of resampled grid
+            spacing: Grid spacing of resampled grid.
         """
         if spacing == self.spacing:
             return
@@ -82,7 +81,7 @@ class Grid:
 
     def as_xyz(self) -> pandas.DataFrame:
         """
-        Returns pandas dataframe representation
+        Returns pandas dataframe representation.
         """
         xyz_data = xr_to_xyz(self.grid)
         if hasattr(self.grid, "nodatavals"):
@@ -91,18 +90,18 @@ class Grid:
 
     def plot(self, ax=None) -> None:
         """
-        Plots data (useful for testing)
+        Plots data (useful for testing).
 
         Args:
-            ax: axis used for plotting (will be created if not supplied)
+            ax: Axis used for plotting (will be created if not supplied).
         """
         self.grid.plot(ax=ax)
 
     def save_grid(self, fname: str) -> None:
         """
-        Saves grid to netcdf file
+        Saves grid to netcdf file.
 
         Args:
-            fname: Output filename
+            fname: Output filename.
         """
         self.grid.to_netcdf(fname)

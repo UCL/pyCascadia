@@ -64,7 +64,7 @@ def nearneighbour(data_xyz, **kwargs):
 def create_interpolation_grid(
     diff_grid: xr.DataArray, nodata_val: int, window_width: int
 ) -> xr.DataArray:
-    """Create filter to smooth hard edge of difference grid
+    """Create filter to smooth hard edge of difference grid.
 
     This works by creating a grid containing 1 where there is data in the input
     grid and a 0 where there is none, then applying a filter to this grid to
@@ -72,12 +72,12 @@ def create_interpolation_grid(
     to smooth its edges.
 
     Args:
-        diff_grid: difference grid to calculate smoothing filter from
-        nodata_val: value in grid representing a lack of data
-        window_width: width of smoothing region at data boundary
+        diff_grid: Difference grid to calculate smoothing filter from.
+        nodata_val: Value in grid representing a lack of data.
+        window_width: Width of smoothing region at data boundary.
 
     Returns:
-        grid which should be multiplied by input grid in order to smooth
+        Grid which should be multiplied by input grid in order to smooth.
     """
     # nodata_grid = xr.where(diff_grid == nodata_val, 1.0, 0.0) # This doesn't work, for reference
 
@@ -99,16 +99,16 @@ def calc_diff_grid(
     diff_threshold: float = 0.0,
     window_width: int = None,
 ) -> xr.DataArray:
-    """Calculates difference grid for use in remove-restore
+    """Calculates difference grid for use in remove-restore.
 
     Args:
-        base_grid: base grid to be later updated using the calculated difference grid
-        update_grid: Differences will be calculated between this and the base grid
-        diff_threshold: Optional threshold above which a difference will be applied
-        window_width: Width of optional smoothing window around update grid
+        base_grid: Base grid to be later updated using the calculated difference grid.
+        update_grid: Differences will be calculated between this and the base grid.
+        diff_threshold: Optional threshold above which a difference will be applied.
+        window_width: Width of optional smoothing window around update grid.
 
     Returns:
-        Difference grid for updating base grid
+        Difference grid for updating base grid.
     """
     print("Blockmedian update grid")
     max_spacing = max(update_grid.spacing, base_grid.spacing)
@@ -162,15 +162,15 @@ def calc_diff_grid(
 
 
 def load_base_grid(fname: str, region: list = None, spacing: bool = None) -> Grid:
-    """Load base grid from file optionally cropping and resampling
+    """Load base grid from file optionally cropping and resampling.
 
     Args:
-        fname: filename of input grid
-        region: Optional region to crop to
-        spacing: Optional grid spacing to which the base grid will be resampled
+        fname: Filename of input grid.
+        region: Optional region to crop to.
+        spacing: Optional grid spacing to which the base grid will be resampled.
 
     Returns:
-        Grid containing base grid
+        Grid containing base grid.
     """
     base_grid = Grid(fname, convert_to_xyz=False)
     if region:
@@ -182,7 +182,7 @@ def load_base_grid(fname: str, region: list = None, spacing: bool = None) -> Gri
 
 
 def main():
-    """Main entry point for remove-restore command line tool
+    """Main entry point for remove-restore command line tool.
 
     This handles arguments, applies the remove-restore algorithm and, optionally, plots the results.
     """
