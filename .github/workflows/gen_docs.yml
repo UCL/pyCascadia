@@ -30,7 +30,7 @@ jobs:
         shell: bash -l {0}
         run: |
           conda install pdoc3
-          pdoc --html --output_dir build pycascadia
+          pdoc --html --output-dir build pycascadia
 
       - name: Init new repo in dist folder and commit generated files
         run: |
