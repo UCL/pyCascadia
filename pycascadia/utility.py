@@ -109,7 +109,7 @@ def filter_nodata(xyz_data: pandas.DataFrame, nodatavals: list) -> None:
         xyz_data.where(xyz_data["z"] != nodata_val, inplace=True)
 
 
-def delete_variable(ds: xr.DataSet, varname: str) -> None:
+def delete_variable(ds: xr.Dataset, varname: str) -> None:
     """
     Remove variable from xarray dataset.
 
