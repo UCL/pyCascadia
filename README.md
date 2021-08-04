@@ -1,5 +1,5 @@
 # pyCascadia
-Implementation of GEBCO cookbook remove-restore and other cleaning of topography/bathymetry. Uses `pyGMT`. 
+Implementation of GEBCO cookbook remove-restore and other cleaning of topography/bathymetry. Uses `pyGMT`.
 
 ## Installation
 Some dependencies of the package are a bit fiddly to install, especially on Windows.
