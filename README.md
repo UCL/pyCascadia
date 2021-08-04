@@ -19,7 +19,7 @@ conda activate pycascadia
 ```
 4. Install `pyCascadia`. This will also automatically install the remaining dependencies (a list of which can be found in [setup.cfg](https://github.com/UCL/pyCascadia/blob/main/setup.cfg)).
 ```
-pip install .[test]
+pip install .
 ```
 5. Check the installation worked by running the unit tests:
 ```
