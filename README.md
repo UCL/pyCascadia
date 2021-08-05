@@ -51,7 +51,10 @@ For more details on these and other input arguments of `remove-restore`, run
 remove-restore -h
 ```
 on your command line.
+
 For more fine-grained control of the `remove-restore` functionality, there is an example Jupyter notebook under `./notebooks/`. Note that to use this, you will need to `pip install jupyter` in the conda environment, too.
+
+Details of the full API can be found in the [documentation](https://github-pages.ucl.ac.uk/pyCascadia/).
 
 ### Variable deletion from NetCDF files
 
