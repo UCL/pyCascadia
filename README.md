@@ -76,7 +76,4 @@ Generate a new netCDF file with any land-boundaries set to $z=0$:
 
 `python close_boundary.py --input <input.nc> --output <output.nc>`
 
-Generate closed contours (this requires you to have [GRASS](https://grass.osgeo.org/download/) installed!):
-
-`grass78  --tmp-location --exec ./generate_contour.sh <input.nc> <output.shp>`
 
