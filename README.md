@@ -66,17 +66,20 @@ delete-variable --input <input.nc> --output <output.nc> --variable <varname>
 
 ### Shape file closing
 
-The scripts `close_boundary.py` and `generate_contour.sh` provide a way to close coastline contours when land intersects the data boundary. These files can be found in the `scripts/` subfolder of your local copy of this GitHub repository, so you should navigate there to use them (or replace the relative path in the commands below, e.g. `python close_boundary.py` -> `python ./scripts/close_boundary.py`).
+The script `close_boundary.py` provides a way to replace values along the domain boundary. This can be used to create "closed" shape files, that are necessary for meshing in OceanMesh2D, in combination with the GDAL command `gdal_contour`. The `close_boundary.py` file can be found in the `scripts/` subfolder of your local copy of this GitHub repository, so you should navigate there to use them (or replace the relative path in the commands below, e.g. `python close_boundary.py` -> `python ./scripts/close_boundary.py`).
 ```
 cd scripts/
 ```
-Instructions for use:
+Instructions for the main use case - creating shapefiles that consist of closed contours at a certain value $z$ and on the domain boundary, where the values are $>z$:
 
-Generate a new netCDF file with any land-boundaries set to $z=0$:
+1. Generate a new netCDF file with all domain boundaries $>z$ set to a value slightly lower than $z$, i.e. $z-epsilon$:
 
-`python close_boundary.py --input <input.nc> --output <output.nc>`
+`python close_boundary.py --value <z-epsilon> --input <input.nc> --output <output.nc>`
 
-Generate closed contours (this requires you to have [GRASS](https://grass.osgeo.org/download/) installed!):
+The reason for using a slightly lower value here is because if the value is exactly equal to $z$, `gdal_contour` does not interpret these locations as a contour line at $z$.
 
-`grass78  --tmp-location --exec ./generate_contour.sh <input.nc> <output.shp>`
+1. Run `gdal_contour` on the `output.nc` file of the previous step to create the final `closed.shp` shape file:
 
+`gdal_contour -fl <z> <output.nc> <closed.shp>`
+
+In our wider Cascadia pipeline, we use contours based on the proximity-to-the-coast map, as these are smoother and avoid discontinuities in the contour lines, which would prevent us from meshing.
