@@ -1,15 +1,19 @@
 # pyCascadia
 Implementation of GEBCO cookbook remove-restore and other cleaning of topography/bathymetry. Uses `pyGMT`.
 
+## Dependencies
+
+The non-python dependencies are:
+
+- gdal
+- GMT
+
 ## Installation
 Some dependencies of the package are a bit fiddly to install, especially on Windows.
-We recommend to use a conda environment, and install the more difficult dependencies through `conda-forge`,
+We recommend using a conda environment, and installing the more difficult dependencies through `conda-forge`,
 by running the commands below in sequence:
-1. Clone this GitHub repository.
-```
-git clone https://github.com/UCL/pyCascadia.git
-```
-2. The proceeding steps assume your current working directory is your local copy of the repository. A mixture of conda and pip is used to install the dependencies (due to the complex dependencies gdal and rasterio). The conda dependencies are listed in [environment.yml](https://github.com/UCL/pyCascadia/blob/main/environment.yml) which will be automatically used by conda when creating a new environment:
+
+1. The proceeding steps assume your current working directory is your local copy of the repository. A mixture of conda and pip is used to install the dependencies (due to the complex dependencies gdal and rasterio). The conda dependencies are listed in [environment.yml](https://github.com/UCL/pyCascadia/blob/main/environment.yml) which will be automatically used by conda when creating a new environment:
 ```
 conda env create
 ```
@@ -19,13 +23,9 @@ conda activate pycascadia
 ```
 4. Install `pyCascadia`. This will also automatically install the remaining dependencies (a list of which can be found in [setup.cfg](https://github.com/UCL/pyCascadia/blob/main/setup.cfg)).
 ```
-pip install .
+pip install pycascadia
 ```
-5. Check the installation worked by running the unit tests:
-```
-pytest
-```
-6. Once you've done your work with `pyCascadia`, you may want to deactivate the environment and return to your base python environment. You can do so by running:
+5. Once you've done your work with `pyCascadia`, you may want to deactivate the environment and return to your base python environment. You can do so by running:
 ```
 conda deactivate
 ```
