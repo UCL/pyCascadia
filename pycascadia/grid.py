@@ -61,6 +61,10 @@ class Grid:
     def resample(self, spacing: float) -> None:
         """
         Resamples the loaded grid using gdal's grdsample.
+        
+        Resampled grid may cover slightly expanded region (to East and North).
+        This is in order to guarantee the specified spacing.
+        See gmt grdsample `-I<increment>+e` flag for details.
 
         Args:
             spacing: Grid spacing of resampled grid.
