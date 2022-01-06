@@ -7,4 +7,5 @@ with open('README.md', 'r', newline='', encoding='utf-8') as readme_file:
 setup(
     long_description = long_description,
     long_description_content_type = long_description_content_type,
+    version = 1.0.2,
 )
