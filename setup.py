@@ -1,13 +1,10 @@
-import pathlib
 from setuptools import setup
 
-# The directory containing this file
-HERE = pathlib.Path(__file__).parent
-
-# The text of the README file
-README = (HERE / "README.md").read_text()
+with open('README.md', 'r', newline='', encoding='utf-8') as readme_file:
+    long_description = readme_file.read()
+    long_description_content_type = 'text/markdown'
 
 setup(
-    long_description=README,
-    long_description_content_type="text/markdown",
+    long_description = long_description,
+    long_description_content_type = long_description_content_type,
 )
