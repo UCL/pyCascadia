@@ -31,9 +31,9 @@ conda deactivate
 ```
 
 ## Usage
-Before using any part of `pyCascadia`, make sure you've got its conda environment activated (change "cascadia" to the name of your environment if you've named it differently when following the installation instructions).
+Before using any part of `pyCascadia`, make sure you've got its conda environment activated (change `pycascadia` to the name of your environment if you've named it differently when following the installation instructions).
 ```
-conda activate cascadia
+conda activate pycascadia
 ```
 ### Remove restore
 
