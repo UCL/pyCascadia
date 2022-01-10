@@ -4,7 +4,7 @@ This document details the contribution guidelines and procedures for pyCascadia.
 
 ## Uploading to PyPi
 
-Uploading the latest version of cascadia to PyPi is currently done manually via the following steps. This must be done by an employee of UCL's research software development group.
+Uploading the latest version of `pyCascadia` to PyPi is currently done manually via the following steps. This must be done by an employee of UCL's research software development group.
 
 1. Create the package:
 
